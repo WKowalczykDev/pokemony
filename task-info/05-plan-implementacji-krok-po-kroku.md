@@ -4,6 +4,8 @@ Kazdy krok ma lokalna bramke `QA po kroku`. Nie czekamy z jakoscia do finalu: po
 
 Domyslny package manager: Bun. Paczki zgodne z Expo SDK 57 instalujemy przez `bunx expo install`, a paczki spoza Expo SDK przez `bun add` albo `bun add -d`.
 
+Zasada UI na wszystkie kroki: najpierw funkcjonalnosc, potem wyglad. Style dodajemy tylko wtedy, gdy sa potrzebne do dzialania, safe area, czytelnosci, braku nachodzenia tekstu albo stabilnych wymiarow. Dekoracyjne style, animacje, rozbudowane palety i dopracowany polish zostaja na krok 13 albo pozniej. Jezeli komponent potrzebuje wiecej niz kilku niezbednych styli, style wydzielamy do `*.styles.ts` obok komponentu, a route files w `app` zostaja mozliwie cienkie.
+
 ## Krok 0 - przygotowanie
 
 Cel:
@@ -84,7 +86,8 @@ Akcje:
   - Camera,
   - Map.
 - Kazdy tab ma wlasny `_layout.tsx` ze stackiem.
-- Kazdy tab ma `index.tsx` z placeholderem i poprawnym title.
+- Kazdy tab ma `index.tsx` z prostym placeholderem i poprawnym title.
+- Placeholdery maja byc minimalne: tekst identyfikujacy ekran, bez dekoracyjnych styli.
 
 Done:
 
@@ -102,7 +105,7 @@ QA po kroku:
 
 Cel:
 
-- Przygotowac wspolny wyglad i komponenty stanu.
+- Przygotowac wspolne komponenty stanu i minimalne stale UI.
 
 Paczki:
 
@@ -112,7 +115,7 @@ bunx expo install expo-image expo-haptics
 
 Akcje:
 
-- Dodac `src/theme/colors.ts`.
+- Dodac male `src/theme/colors.ts` tylko z wartosciami potrzebnymi komponentom.
 - Dodac komponenty:
   - `EmptyState`,
   - `ErrorState`,
@@ -120,6 +123,7 @@ Akcje:
   - `PokemonCard`,
   - `PokemonListRow`.
 - Uzyc `expo-image` dla obrazkow Pokemonow.
+- Komponenty bazowe maja miec minimalny layout; bez cieni, ozdobnych kart, animacji i rozbudowanej palety.
 
 Done:
 
@@ -132,6 +136,7 @@ QA po kroku:
 - Placeholdery ekranow moga uzyc `EmptyState`, `LoadingState` albo `ErrorState` bez crasha.
 - Komponenty bazowe renderuja sie bez nachodzacego tekstu.
 - Nie ma duplikacji lokalnych styli dla tych samych stanow.
+- Jezeli style komponentu rosna ponad kilka niezbednych wlasciwosci, sa wydzielone do `*.styles.ts`.
 
 ## Krok 4 - typy domenowe
 
@@ -215,6 +220,7 @@ Akcje:
   - error state,
   - empty state.
 - Klikniecie row otwiera `/pokemon/[name]`.
+- Lista ma uzywac tylko styli potrzebnych dla czytelnosci, separatorow lub stabilnego layoutu.
 
 Done:
 
@@ -249,6 +255,7 @@ Akcje:
   - abilities,
   - stats.
 - Dodac akcje "Set favorite".
+- Detail ma byc funkcjonalny i czytelny; dopracowany wyglad zostaje na krok 13.
 
 Done:
 
@@ -285,6 +292,7 @@ Akcje:
   - empty state bez favorite,
   - detail/card z favorite,
   - header button "Unfavorite".
+- Empty/card/detail maja byc proste i funkcjonalne, bez ozdobnego polishu.
 
 Done:
 
@@ -319,6 +327,7 @@ Akcje:
 - Long press dodaje pinezke z aktualnym favorite Pokemonem.
 - Marker press pokazuje modal/formSheet.
 - Modal pokazuje krotki opis Pokemona i jego obrazek, jezeli jest dostepny.
+- Mapa i modal maja uzywac tylko styli potrzebnych do poprawnych wymiarow, safe area i czytelnosci.
 
 Done:
 
@@ -436,7 +445,7 @@ QA po kroku:
 
 Cel:
 
-- Dodac jakosc, ktora pokazuje "tricks" z notatek zadania.
+- Dodac jakosc wizualna i "tricks" z notatek zadania dopiero po stabilnym MVP.
 
 Akcje:
 
