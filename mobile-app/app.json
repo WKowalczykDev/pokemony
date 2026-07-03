@@ -35,6 +35,6 @@
     "experiments": {
       "typedRoutes": true
     },
-    "plugins": ["expo-router", "expo-status-bar"]
+    "plugins": ["expo-router", "expo-status-bar", "expo-image"]
   }
 }
