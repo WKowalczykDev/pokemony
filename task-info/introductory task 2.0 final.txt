@@ -1,0 +1,61 @@
+Introductory task
+‭Building a starter app‬
+‭You'll use‬‭pokeapi.co‬‭to fill your app with ready to use data. The app will
+consist‬of 3 tabs:‬
+1. Favorite Pokémon tab‬
+2. List of Pokémon tab‬
+3. Camera screen‬
+4. Map tab‬
+‭You'll use expo-router (or react-navigation if you are really into it) for navigation‬
+in the app and use tab navigator with embedded stack navigators if necessary.‬
+
+‭1. Favorite Pokémon tab‬
+‭Display your favorite pokemon, it has to be stored locally in async storage.‬
+Display basic information about pokemon and its photo.‬
+If you don't have a favorite pokemon there should be an empty state.‬
+If you have a favorite Pokemon, the screen header should display a button that‬‭
+lets you un-favorite a pokemon.‬
+
+‭2. List of Pokémon
+‭"infinite" scrolling, requesting more data, pulling to refresh, etc.‬
+
+Introductory task
+
+1
+
+‭Nice to have display photos of pokemons in the list that lazy load from the API.‬
+‭Clicking a pokemon displays a screen similar to favorite pokemon but with an‬‭
+option to select this pokemon as your favorite instead of removing it from‬‭
+favorite like in the favorite screen.‬
+(‬‭b‬‭o‬‭n‬‭u‬‭s‬‭) This screen can be displayed in the‬‭bottom sheet‬‭on top of the list‬
+below for bonus points (But use stack navigation first or use it in some different‬
+place).‬
+
+3.‬‭C‬‭r‬‭a‬‭z‬‭y‬‭Vision Camera screen‬
+‭Use face recognition from‬‭react native vision camera‬‭, and splash your favorite‬
+pokemon image on your forehead. Or replace some object with image if‬‭
+selected pokemon eg. Detect a Banana and put a pokemon image on it. You‬‭
+can also try something new using camera capabilities like: Saving created‬‭
+images to phone memory.‬
+You can also save the location where the image was taken and then display it to‬
+the map.‬
+
+‭4. Map screen‬
+‭On this screen you should display a map where upon long click, you add a new‬
+pin to the map.‬
+‭The way how you will order the UI is up to you, but upon clicking on the pin a‬‭
+bottom sheet or some modal-like view should appear, with a brief description
+of‬‭which pokemon it is (can be reused from the‬‭b‬‭o‬‭n‬‭u‬‭s‬‭from second point).‬
+
+‭Additional notes‬
+I‭f you know some tricks, show them‬
+I‭f you want to use a UI library go ahead do so‬
+Make sure to have prettier and eslint set up for the project
+If you want to use AI, feel free, but check what it generates and be sure you
+understand the code
+
+Introductory task
+
+2
+
+
