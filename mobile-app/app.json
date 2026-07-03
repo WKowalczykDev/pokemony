@@ -2,6 +2,7 @@
   "expo": {
     "name": "pokemony",
     "slug": "pokemony",
+    "scheme": "pokemony",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -30,6 +31,10 @@
         "projectId": "f12a60ff-f588-4221-943a-615bb3f1f45e"
       }
     },
-    "owner": "wkowdev"
+    "owner": "wkowdev",
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": ["expo-router", "expo-status-bar"]
   }
 }
