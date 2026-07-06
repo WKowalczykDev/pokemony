@@ -1,5 +1,6 @@
 import "react-native-gesture-handler";
 
+import { BottomSheetProvider } from "@swmansion/react-native-bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation";
 import { Stack } from "expo-router/stack";
@@ -21,13 +22,23 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="pokemon/[name]" options={{ headerShown: true, title: "Pokemon" }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
+        <BottomSheetProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="pokemon/[name]"
+              options={{
+                animation: "fade",
+                contentStyle: { backgroundColor: "transparent" },
+                headerShown: false,
+                presentation: "transparentModal",
+              }}
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </BottomSheetProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
