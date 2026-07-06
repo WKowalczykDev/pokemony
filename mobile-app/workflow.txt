@@ -1,0 +1,12 @@
+Na co dzień, przy zmianach JS/TS:
+bunx expo start --dev-client --clear
+
+Pierwsze uruchomienie albo po zmianach native/paczek:
+bunx expo run:ios --no-build-cache
+
+Jeśli nadal coś “pamięta” po native zmianach:
+bunx expo prebuild --clean -p ios
+bunx expo run:ios --no-build-cache
+
+Jeśli chcesz wyczyścić dane aplikacji na symulatorze:
+xcrun simctl uninstall booted com.wkowdev.pokemony
