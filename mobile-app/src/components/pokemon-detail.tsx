@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { useCallback, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { colors } from "@/theme/colors";
@@ -9,17 +10,46 @@ type PokemonDetailProps = {
   onSetFavorite: () => void;
 };
 
+const SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
 function formatName(name: string) {
   return name.replaceAll("-", " ");
 }
 
+function getPokemonSpriteUrl(id: number) {
+  return `${SPRITE_BASE_URL}/${id}.png`;
+}
+
 export function PokemonDetail({ pokemon, onSetFavorite }: PokemonDetailProps) {
+  const fallbackImageUrl = useMemo(() => getPokemonSpriteUrl(pokemon.id), [pokemon.id]);
+  const initialImageUrl = pokemon.imageUrl || fallbackImageUrl;
+  const imageStateKey = `${pokemon.id}:${initialImageUrl}`;
+  const [imageState, setImageState] = useState<{
+    imageUrl: string | undefined;
+    stateKey: string;
+  }>({
+    imageUrl: initialImageUrl,
+    stateKey: imageStateKey,
+  });
+  const activeImageUrl =
+    imageState.stateKey === imageStateKey ? imageState.imageUrl : initialImageUrl;
+
+  const handleImageError = useCallback(() => {
+    setImageState({
+      imageUrl:
+        activeImageUrl && activeImageUrl !== fallbackImageUrl ? fallbackImageUrl : undefined,
+      stateKey: imageStateKey,
+    });
+  }, [activeImageUrl, fallbackImageUrl, imageStateKey]);
+
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <Image
         accessibilityLabel={`${pokemon.name} image`}
         contentFit="contain"
-        source={{ uri: pokemon.imageUrl }}
+        onError={handleImageError}
+        recyclingKey={activeImageUrl ?? pokemon.name}
+        source={activeImageUrl ? { uri: activeImageUrl } : undefined}
         style={styles.image}
       />
 
@@ -65,6 +95,8 @@ const styles = StyleSheet.create({
   },
   image: {
     alignSelf: "center",
+    backgroundColor: colors.surface,
+    borderRadius: 6,
     height: 160,
     width: 160,
   },
