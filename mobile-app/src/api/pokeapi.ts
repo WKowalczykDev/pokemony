@@ -77,7 +77,10 @@ async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new PokeApiError(`PokeAPI request failed with status ${response.status}.`, response.status);
+    throw new PokeApiError(
+      `PokeAPI request failed with status ${response.status}.`,
+      response.status,
+    );
   }
 
   return (await response.json()) as T;
@@ -123,7 +126,9 @@ function mapPokemonType(typeEntry: PokemonDetailsResponse["types"][number]): Pok
   };
 }
 
-function mapPokemonAbility(abilityEntry: PokemonDetailsResponse["abilities"][number]): PokemonAbility {
+function mapPokemonAbility(
+  abilityEntry: PokemonDetailsResponse["abilities"][number],
+): PokemonAbility {
   return {
     isHidden: abilityEntry.is_hidden,
     name: abilityEntry.ability.name,
@@ -177,7 +182,9 @@ export async function fetchPokemonDetails(nameOrId: string | number): Promise<Po
     throw new Error("Pokemon name or id is required.");
   }
 
-  const response = await getJson<PokemonDetailsResponse>(`${BASE_URL}/pokemon/${normalizedNameOrId}`);
+  const response = await getJson<PokemonDetailsResponse>(
+    `${BASE_URL}/pokemon/${normalizedNameOrId}`,
+  );
 
   return mapPokemonDetails(response);
 }
