@@ -1,7 +1,7 @@
 import { BottomSheet } from "@swmansion/react-native-bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import { StyleSheet, useWindowDimensions, View , Pressable} from "react-native";
+import { StyleSheet, useWindowDimensions, View, Pressable } from "react-native";
 
 import { ErrorState, LoadingState, PokemonDetail } from "@/components";
 import { usePokemonDetails } from "@/hooks/use-pokemon-details";
@@ -52,30 +52,44 @@ export default function PokemonDetailRoute() {
     [closeRoute],
   );
 
+  const closeSheet = useCallback(() => {
+    setSheetIndex(closedSheetIndex);
+  }, []);
+
+  const handleSettle = useCallback(
+    (settledIndex: number) => {
+      if (settledIndex === closedSheetIndex) {
+        closeRoute();
+      }
+    },
+    [closeRoute],
+  );
+
   return (
     <View style={styles.screen}>
-    <Pressable style={StyleSheet.absoluteFill} onPress={closeRoute} />
-    <BottomSheet
-      animateIn
-      detents={detents}
-      index={sheetIndex}
-      onIndexChange={handleIndexChange}
-      surface={<View style={styles.surface} />}
-    >
-      <View style={styles.container}>
-        {isPending ? <LoadingState message="Loading Pokemon details..." /> : null}
-        {isError ? (
-          <ErrorState
-            message={error.message}
-            onRetry={() => {
-              void refetch();
-            }}
-            title="Could not load Pokemon"
-          />
-        ) : null}
-        {data ? <PokemonDetail pokemon={data} onSetFavorite={() => {}} /> : null}
-      </View>
-    </BottomSheet>
+      <Pressable style={StyleSheet.absoluteFill} onPress={closeSheet} />
+      <BottomSheet
+        animateIn
+        detents={detents}
+        index={sheetIndex}
+        onIndexChange={handleIndexChange}
+        onSettle={handleSettle}
+        surface={<View style={styles.surface} />}
+      >
+        <View style={styles.container}>
+          {isPending ? <LoadingState message="Loading Pokemon details..." /> : null}
+          {isError ? (
+            <ErrorState
+              message={error.message}
+              onRetry={() => {
+                void refetch();
+              }}
+              title="Could not load Pokemon"
+            />
+          ) : null}
+          {data ? <PokemonDetail pokemon={data} onSetFavorite={() => { }} /> : null}
+        </View>
+      </BottomSheet>
     </View>
   );
 }
@@ -88,7 +102,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     backgroundColor: colors.background,
   },
-  screen:{
-    flex:1,
+  screen: {
+    flex: 1,
   }
 });
