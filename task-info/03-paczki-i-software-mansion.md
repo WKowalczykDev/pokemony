@@ -115,7 +115,7 @@ Gdzie:
 
 Po co:
 
-- localStorage polyfill przez `expo-sqlite/localStorage/install`,
+- async key-value storage przez `expo-sqlite/kv-store`,
 - lokalny zapis ulubionego Pokemona i pinezek.
 
 Gdzie:
@@ -124,8 +124,8 @@ Gdzie:
 
 Decyzja:
 
-- Nie uzywamy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
-- Powod: lokalne instrukcje Expo SDK 57 w repo mowia, aby dla prostego key-value uzyc SQLite localStorage polyfill i nie uzywac AsyncStorage.
+- Nie instalujemy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
+- Powod: `expo-sqlite/kv-store` w Expo SDK 57 wystawia async API zgodne z AsyncStorage i trzyma dane w SQLite, wiec spelnia wymaganie lokalnego async storage bez dodatkowej paczki.
 
 ## Software Mansion stack
 

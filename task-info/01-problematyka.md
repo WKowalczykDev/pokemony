@@ -23,7 +23,7 @@ Przyjmujemy wiec cztery taby jako zakres implementacji.
 - Jesli nie ma ulubionego Pokemona, ekran pokazuje empty state.
 - Jesli ulubiony Pokemon istnieje, header ekranu pokazuje przycisk do usuniecia z ulubionych.
 
-Decyzja techniczna: tekst zadania mowi o AsyncStorage, ale w tym repo obowiazuje instrukcja Expo SDK 57, ktora zaleca `expo-sqlite/localStorage/install` dla prostego key-value storage i mowi, aby nie uzywac AsyncStorage. Dlatego implementacja uzywa storage przez SQLite localStorage polyfill, a dokumentacja odnotowuje to jako swiadome odstępstwo.
+Decyzja techniczna: tekst zadania mowi o AsyncStorage. W tym repo realizujemy te intencje przez async API `expo-sqlite/kv-store`, ktore wedlug Expo SDK 57 jest drop-in replacement dla `@react-native-async-storage/async-storage` i zapisuje dane w SQLite. Nie instalujemy osobnej paczki `@react-native-async-storage/async-storage`.
 
 ### 2. List of Pokemon
 
@@ -90,4 +90,3 @@ MVP jest gotowe, gdy:
 - Face detector moze miec ograniczenia na niektorych symulatorach iOS.
 - PokeAPI moze byc chwilowo niedostepne albo wolne, wiec UI musi miec retry/error states.
 - Mapa na iOS powinna dzialac na apple mapsach, powinno istniec pozniejsze ewentualne przygotowanie pod rozszerzenie o androida i implementacje z google mapsa
-

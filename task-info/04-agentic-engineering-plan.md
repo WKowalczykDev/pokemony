@@ -99,7 +99,7 @@ Done:
 Misja:
 
 - Zaimplementowac lokalny storage dla favorite i map pins.
-- Uzyc `expo-sqlite/localStorage/install`.
+- Uzyc async API `expo-sqlite/kv-store`.
 
 Wejscia:
 

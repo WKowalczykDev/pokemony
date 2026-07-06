@@ -72,7 +72,7 @@ mobile-app/
 
 - `QueryClientProvider` dla TanStack Query.
 - Theme provider Expo Router / React Navigation.
-- Importy wymagane przez native libraries, na przyklad gesture handler i storage polyfill.
+- Importy wymagane przez native libraries, na przyklad gesture handler.
 - Root stack bez customowego headera dla tabow.
 
 Wazne: jezeli uzywamy Reanimated i Gesture Handler, trzeba poprawnie ustawic entrypoint i Babel pluginy zgodnie z wersjami Expo SDK 57 oraz bibliotek.
@@ -133,11 +133,11 @@ Dane lokalne:
 - `favoritePokemon:v1`.
 - `mapPins:v1`.
 
-Storage implementujemy przez `expo-sqlite/localStorage/install`.
+Storage implementujemy przez async API `expo-sqlite/kv-store`, czyli SQLite-backed zamiennik AsyncStorage dostarczany przez `expo-sqlite`.
 
 Przeplyw:
 
-1. `src/storage/storage.ts` instaluje polyfill i daje maly wrapper `get`, `set`, `remove`, `subscribe`.
+1. `src/storage/storage.ts` importuje `Storage` z `expo-sqlite/kv-store` i daje maly async wrapper `get`, `set`, `remove`, `subscribe`.
 2. `favorite-storage.ts` mapuje JSON na `FavoritePokemon`.
 3. `map-pin-storage.ts` mapuje JSON na tablice `MapPin`.
 4. Hooki `useFavoritePokemon` i `useMapPins` wystawiaja reaktywny stan do UI.
@@ -203,4 +203,3 @@ Kazdy ekran z danymi z sieci powinien miec:
 - `src/components`: prezentacja, bez bezposredniego dostepu do storage lub globalnej nawigacji.
 - `src/theme`: kolory i stale UI.
 - `src/types`: wspoldzielone typy.
-

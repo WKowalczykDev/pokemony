@@ -284,7 +284,7 @@ bunx expo install expo-sqlite
 
 Akcje:
 
-- Dodac `src/storage/storage.ts` z `expo-sqlite/localStorage/install`.
+- Dodac `src/storage/storage.ts` z async wrapperem nad `expo-sqlite/kv-store`.
 - Dodac `favorite-storage.ts`.
 - Dodac `useFavoritePokemon`.
 - Podlaczyc "Set favorite" w detail.

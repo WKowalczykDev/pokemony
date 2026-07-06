@@ -48,7 +48,7 @@ Nie trzeba czytac PDF, jezeli `introductory task 2.0 final.txt` i pliki `.md` wy
 - Dev dependencies instaluj przez `bun add -d`.
 - Nie instaluj paczek na zapas.
 - Nie uzywaj `axios`; PokeAPI obsluguj przez natywny `fetch`.
-- Nie uzywaj AsyncStorage; lokalny key-value storage rob przez `expo-sqlite/localStorage/install`.
+- Nie instaluj `@react-native-async-storage/async-storage`; lokalny key-value storage rob przez async API `expo-sqlite/kv-store`, ktore jest kompatybilnym zamiennikiem AsyncStorage opartym o SQLite.
 - Nie umieszczaj komponentow, hookow, storage, API ani typow domenowych w `app`.
 - `app` ma zawierac route files i layouty, a logika ma byc w `src`.
 - Funkcjonalnosc jest wazniejsza niz wyglad: nie dodawaj dekoracyjnych styli, palet, cieni, animacji ani rozbudowanych placeholderow przed etapem polish.
@@ -188,7 +188,7 @@ Cel: wspoldzielony ekran szczegolow.
 Cel: lokalny favorite Pokemon.
 
 - Dodaj `expo-sqlite`.
-- Dodaj storage przez `expo-sqlite/localStorage/install`.
+- Dodaj storage przez async API `expo-sqlite/kv-store`.
 - Dodaj `favorite-storage.ts`.
 - Dodaj `useFavoritePokemon`.
 - Podepnij `Set favorite`.
@@ -329,5 +329,5 @@ Na koniec pracy odpowiedz krotko:
 - Tekst zadania wspomina "3 tabs", ale plan przyjmuje cztery widoki: Favorites, Pokedex, Camera, Map.
 - Camera/VisionCamera moze wymagac fizycznego urzadzenia albo development builda.
 - Face detection moze nie dzialac w pelni na symulatorze.
-- Storage ma uzywac `expo-sqlite/localStorage/install`, a nie AsyncStorage.
+- Storage ma uzywac `expo-sqlite/kv-store` jako async key-value storage. Nie instaluj `@react-native-async-storage/async-storage`.
 - Niektore paczki native moga wymagac rebuilda aplikacji.

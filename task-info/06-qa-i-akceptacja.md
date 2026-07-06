@@ -10,7 +10,7 @@ Dokumentacja w `task-info` jest gotowa, gdy:
 
 - kazdy plik ma jasna odpowiedzialnosc,
 - wymagania z `introductory task 2.0 final.txt` sa odwzorowane,
-- konflikt AsyncStorage kontra Expo SDK 57 jest opisany,
+- decyzja AsyncStorage jest opisana: uzywamy async API `expo-sqlite/kv-store` zamiast osobnej paczki `@react-native-async-storage/async-storage`,
 - Software Mansion stack jest nazwany i uzasadniony,
 - roadmapa implementacji jest sekwencyjna i mozliwa do przekazania agentowi,
 - QA zawiera scenariusze dla wszystkich czterech tabow.
