@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BottomSheetProvider } from "@swmansion/react-native-bottom-sheet";
 
 import {
   EmptyState,
@@ -76,7 +77,7 @@ export default function PokedexScreen() {
   }
 
   return (
-    <>
+    <BottomSheetProvider>
       <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
         <FlatList
           contentContainerStyle={[
@@ -132,7 +133,7 @@ export default function PokedexScreen() {
           selectedPokemonName={selectedPokemonName}
         />
       ) : null}
-    </>
+    </BottomSheetProvider>
   );
 }
 
