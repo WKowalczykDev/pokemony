@@ -276,15 +276,14 @@ Cel:
 
 - Lokalnie zapisywac i wyswietlac ulubionego Pokemona.
 
-Paczki:
+Storage:
 
-```bash
-bunx expo install expo-sqlite
-```
+- Jedynym zrodlem prawdy dla lokalnego key-value storage jest `kv-store`.
+- Nie dodajemy osobnego AsyncStorage, `localStorage` ani alternatywnego mechanizmu storage dla favorite.
 
 Akcje:
 
-- Dodac `src/storage/storage.ts` z async wrapperem nad `expo-sqlite/kv-store`.
+- Dodac `src/storage/storage.ts` z async wrapperem nad `kv-store`.
 - Dodac `favorite-storage.ts`.
 - Dodac `useFavoritePokemon`.
 - Podlaczyc "Set favorite" w detail.

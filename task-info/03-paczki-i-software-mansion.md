@@ -115,7 +115,7 @@ Gdzie:
 
 Po co:
 
-- async key-value storage przez `expo-sqlite/kv-store`,
+- dostarcza `expo-sqlite/kv-store`, ktory jest jedynym zrodlem prawdy dla async key-value storage,
 - lokalny zapis ulubionego Pokemona i pinezek.
 
 Gdzie:
@@ -124,8 +124,10 @@ Gdzie:
 
 Decyzja:
 
+- Uzywamy wylacznie `expo-sqlite/kv-store` jako aplikacyjnej abstrakcji storage.
 - Nie instalujemy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
-- Powod: `expo-sqlite/kv-store` w Expo SDK 57 wystawia async API zgodne z AsyncStorage i trzyma dane w SQLite, wiec spelnia wymaganie lokalnego async storage bez dodatkowej paczki.
+- Nie uzywamy `expo-sqlite/localStorage/install`.
+- Nie tworzymy recznych tabel SQLite dla favorite/map pins; dane ida przez key-value API z `kv-store`.
 
 ## Software Mansion stack
 

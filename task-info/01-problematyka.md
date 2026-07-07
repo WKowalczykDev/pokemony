@@ -23,7 +23,7 @@ Przyjmujemy wiec cztery taby jako zakres implementacji.
 - Jesli nie ma ulubionego Pokemona, ekran pokazuje empty state.
 - Jesli ulubiony Pokemon istnieje, header ekranu pokazuje przycisk do usuniecia z ulubionych.
 
-Decyzja techniczna: tekst zadania mowi o AsyncStorage. W tym repo realizujemy te intencje przez async API `expo-sqlite/kv-store`, ktore wedlug Expo SDK 57 jest drop-in replacement dla `@react-native-async-storage/async-storage` i zapisuje dane w SQLite. Nie instalujemy osobnej paczki `@react-native-async-storage/async-storage`.
+Decyzja techniczna: jedynym zrodlem prawdy dla lokalnego key-value storage jest async API `expo-sqlite/kv-store`. Tekst zadania wspomina AsyncStorage, ale w tym repo nie instalujemy `@react-native-async-storage/async-storage`, nie uzywamy `expo-sqlite/localStorage/install` i nie piszemy recznych tabel SQLite dla favorite/map pins. `expo-sqlite` instalujemy tylko jako paczke dostarczajaca modul `expo-sqlite/kv-store`.
 
 ### 2. List of Pokemon
 

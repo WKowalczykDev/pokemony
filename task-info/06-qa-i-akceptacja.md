@@ -10,7 +10,7 @@ Dokumentacja w `task-info` jest gotowa, gdy:
 
 - kazdy plik ma jasna odpowiedzialnosc,
 - wymagania z `introductory task 2.0 final.txt` sa odwzorowane,
-- decyzja AsyncStorage jest opisana: uzywamy async API `expo-sqlite/kv-store` zamiast osobnej paczki `@react-native-async-storage/async-storage`,
+- decyzja storage jest opisana: jedynym zrodlem prawdy dla lokalnych danych key-value jest async API `expo-sqlite/kv-store`; nie uzywamy osobnej paczki `@react-native-async-storage/async-storage`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins,
 - Software Mansion stack jest nazwany i uzasadniony,
 - roadmapa implementacji jest sekwencyjna i mozliwa do przekazania agentowi,
 - QA zawiera scenariusze dla wszystkich czterech tabow.

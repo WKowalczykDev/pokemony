@@ -8,7 +8,7 @@ Ten plik jest osobna, robocza checklista wymagan przygotowana na bazie `introduc
 - [ ] Nawigacja ma byc oparta o Expo Router.
 - [ ] Kazdy tab moze miec wlasny stack navigator.
 - [ ] Target implementacyjny jest iOS-first.
-- [ ] Lokalny zapis favorite robimy przez async API `expo-sqlite/kv-store`, bez instalowania `@react-native-async-storage/async-storage`.
+- [ ] Lokalny zapis favorite robimy wylacznie przez async API `expo-sqlite/kv-store`, bez instalowania `@react-native-async-storage/async-storage`, bez `expo-sqlite/localStorage/install` i bez recznych tabel SQLite.
 - [ ] Bun jest domyslnym package managerem.
 
 ## Favorite Pokemon tab

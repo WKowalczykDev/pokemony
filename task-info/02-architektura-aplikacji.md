@@ -133,7 +133,7 @@ Dane lokalne:
 - `favoritePokemon:v1`.
 - `mapPins:v1`.
 
-Storage implementujemy przez async API `expo-sqlite/kv-store`, czyli SQLite-backed zamiennik AsyncStorage dostarczany przez `expo-sqlite`.
+Storage implementujemy wylacznie przez async API `expo-sqlite/kv-store`. To jest jedyne zrodlo prawdy dla lokalnych danych key-value w aplikacji. `expo-sqlite` jest tylko paczka dostarczajaca ten modul; nie uzywamy osobnego AsyncStorage, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
 
 Przeplyw:
 
