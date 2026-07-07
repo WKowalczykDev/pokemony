@@ -10,7 +10,7 @@ export default function PokedexLayout() {
           animation: "fade",
           contentStyle: { backgroundColor: "transparent" },
           headerShown: false,
-          presentation: "transparentModal",
+          presentation: "containedTransparentModal",
         }}
       />
     </Stack>
