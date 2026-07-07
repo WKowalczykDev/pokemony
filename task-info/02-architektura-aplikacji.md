@@ -108,7 +108,7 @@ Zachowanie:
 - Pobiera szczegoly Pokemona po `name` albo `id`.
 - Pokazuje zdjecie, nazwe, typy, podstawowe statystyki, wzrost, wage i abilities.
 - Jesli Pokemon nie jest favorite, pokazuje akcje "Set favorite".
-- Jesli Pokemon jest favorite, pokazuje stan aktywny i mozliwosc usuniecia lub zmiany.
+- Jesli Pokemon jest favorite, pokazuje stan aktywny i mozliwosc usuniecia jego ID z favorites.
 
 ## Data flow
 
@@ -130,15 +130,15 @@ Nie uzywamy `axios`; Expo data-fetching guidance preferuje natywny `fetch`.
 
 Dane lokalne:
 
-- `favoritePokemon:v1`.
+- `favoritePokemonIds:v1`.
 - `mapPins:v1`.
 
-Storage implementujemy wylacznie przez async API `expo-sqlite/kv-store`. To jest jedyne zrodlo prawdy dla lokalnych danych key-value w aplikacji. `expo-sqlite` jest tylko paczka dostarczajaca ten modul; nie uzywamy osobnego AsyncStorage, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
+Storage implementujemy wylacznie przez `react-native-mmkv`. To jest jedyne zrodlo prawdy dla lokalnych danych key-value w aplikacji. Nie uzywamy AsyncStorage, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
 
 Przeplyw:
 
-1. `src/storage/storage.ts` importuje `Storage` z `expo-sqlite/kv-store` i daje maly async wrapper `get`, `set`, `remove`, `subscribe`.
-2. `favorite-storage.ts` mapuje JSON na `FavoritePokemon`.
+1. `src/storage/storage.ts` tworzy jedna instancje MMKV i daje maly wrapper `getString`, `setString`, `remove`, opcjonalnie `subscribe`.
+2. `favorite-storage.ts` mapuje JSON na `FavoritePokemonIds`, czyli tablice `number[]`; zapis nie zawiera nazw, obrazkow ani payloadow PokeAPI.
 3. `map-pin-storage.ts` mapuje JSON na tablice `MapPin`.
 4. Hooki `useFavoritePokemon` i `useMapPins` wystawiaja reaktywny stan do UI.
 
@@ -165,12 +165,7 @@ export type PokemonDetails = {
   stats: Array<{ name: string; value: number }>;
 };
 
-export type FavoritePokemon = {
-  id: number;
-  name: string;
-  imageUrl: string;
-  selectedAt: string;
-};
+export type FavoritePokemonIds = number[];
 
 export type MapPin = {
   id: string;

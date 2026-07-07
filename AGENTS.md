@@ -48,8 +48,8 @@ Nie trzeba czytac PDF, jezeli `introductory task 2.0 final.txt` i pliki `.md` wy
 - Dev dependencies instaluj przez `bun add -d`.
 - Nie instaluj paczek na zapas.
 - Nie uzywaj `axios`; PokeAPI obsluguj przez natywny `fetch`.
-- Jedynym zrodlem prawdy dla lokalnego key-value storage jest `expo-sqlite/kv-store`.
-- Nie instaluj `@react-native-async-storage/async-storage`, nie uzywaj `expo-sqlite/localStorage/install` i nie pisz recznych tabel SQLite dla favorite/map pins.
+- Jedynym zrodlem prawdy dla lokalnego key-value storage jest `react-native-mmkv`.
+- Nie uzywaj `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
 - Nie umieszczaj komponentow, hookow, storage, API ani typow domenowych w `app`.
 - `app` ma zawierac route files i layouty, a logika ma byc w `src`.
 - Funkcjonalnosc jest wazniejsza niz wyglad: nie dodawaj dekoracyjnych styli, palet, cieni, animacji ani rozbudowanych placeholderow przed etapem polish.
@@ -149,7 +149,7 @@ Cel: jedno zrodlo prawdy dla danych.
 
 - Dodaj `src/types/pokemon.ts`.
 - Dodaj `src/types/map.ts`.
-- Zdefiniuj `PokemonListItem`, `PokemonDetails`, `FavoritePokemon`, `MapPin`.
+- Zdefiniuj `PokemonListItem`, `PokemonDetails`, `FavoritePokemonIds`, `MapPin`.
 - QA: typy sa w jednym miejscu i TypeScript przechodzi.
 
 ### Krok 5 - PokeAPI i React Query
@@ -184,17 +184,18 @@ Cel: wspoldzielony ekran szczegolow.
 - Dodaj akcje `Set favorite`, nawet jesli storage bedzie podpiety w kolejnym kroku.
 - QA: route dziala, back wraca do Pokedex, error state dziala.
 
-### Krok 8 - favorite storage i Favorites tab
+### Krok 8 - favorites storage i Favorites tab
 
-Cel: lokalny favorite Pokemon.
+Cel: lokalne favorites Pokemonow zapisane jako tablica ID.
 
-- Dodaj `expo-sqlite` tylko jako paczke dostarczajaca `expo-sqlite/kv-store`.
-- Dodaj storage przez async API `expo-sqlite/kv-store`, ktore jest jedynym zrodlem prawdy dla lokalnych danych key-value.
+- Dodaj `react-native-mmkv` i `react-native-nitro-modules` przez `bunx expo install`.
+- Uwzglednij `bunx expo prebuild`, bo MMKV jest natywnym modulem JSI/Nitro.
+- Dodaj storage przez MMKV, ktore jest jedynym zrodlem prawdy dla lokalnych danych key-value.
 - Dodaj `favorite-storage.ts`.
 - Dodaj `useFavoritePokemon`.
 - Podepnij `Set favorite`.
-- Zbuduj Favorites tab z empty state, card/detail i header action `Unfavorite`.
-- QA: set favorite, unfavorite, restart aplikacji zachowuje stan.
+- Zbuduj Favorites tab z empty state, lista/card/detail i akcja usuniecia pojedynczego Pokemona z favorites.
+- QA: dodanie wielu favorites, brak duplikatow ID, usuniecie favorite, restart aplikacji zachowuje stan.
 
 ### Krok 9 - Map tab
 
@@ -330,5 +331,5 @@ Na koniec pracy odpowiedz krotko:
 - Tekst zadania wspomina "3 tabs", ale plan przyjmuje cztery widoki: Favorites, Pokedex, Camera, Map.
 - Camera/VisionCamera moze wymagac fizycznego urzadzenia albo development builda.
 - Face detection moze nie dzialac w pelni na symulatorze.
-- Storage ma uzywac wylacznie `expo-sqlite/kv-store` jako async key-value storage. Nie instaluj `@react-native-async-storage/async-storage`, nie uzywaj `expo-sqlite/localStorage/install` i nie tworz alternatywnego storage.
+- Storage ma uzywac wylacznie `react-native-mmkv` jako local key-value storage. Nie uzywaj `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani alternatywnego storage.
 - Niektore paczki native moga wymagac rebuilda aplikacji.

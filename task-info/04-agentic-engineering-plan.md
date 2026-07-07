@@ -57,7 +57,7 @@ Wejscia:
 Wyjscia:
 
 - route structure,
-- typy `PokemonListItem`, `PokemonDetails`, `FavoritePokemon`, `MapPin`,
+- typy `PokemonListItem`, `PokemonDetails`, `FavoritePokemonIds`, `MapPin`,
 - podstawowe providers.
 
 Done:
@@ -98,9 +98,9 @@ Done:
 
 Misja:
 
-- Zaimplementowac lokalny storage dla favorite i map pins.
-- Uzyc wylacznie async API `expo-sqlite/kv-store`.
-- Traktowac `expo-sqlite/kv-store` jako jedyne zrodlo prawdy dla lokalnych danych key-value; bez osobnego AsyncStorage, `expo-sqlite/localStorage/install` i recznych tabel SQLite dla favorite/map pins.
+- Zaimplementowac lokalny storage dla favorites i map pins.
+- Uzyc wylacznie `react-native-mmkv`.
+- Traktowac MMKV jako jedyne zrodlo prawdy dla lokalnych danych key-value; bez AsyncStorage, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` i recznych tabel SQLite dla favorite/map pins.
 
 Wejscia:
 
@@ -117,7 +117,8 @@ Wyjscia:
 
 Done:
 
-- Favorite utrzymuje sie po restarcie aplikacji.
+- Favorites utrzymuja sie po restarcie aplikacji.
+- Favorites sa zapisane wylacznie jako tablica ID Pokemonow bez duplikatow.
 - Map pins utrzymuja sie po restarcie aplikacji.
 - JSON parse ma fallback i nie crashuje UI przy uszkodzonych danych.
 
@@ -233,7 +234,8 @@ Done:
 
 Zamiast przekazywac luzne obiekty, agenci powinni uzgadniac typy:
 
-- `PokemonDetails` dla szczegolow i favorite.
+- `PokemonDetails` dla szczegolow pobieranych z API.
+- `FavoritePokemonIds` dla lokalnego storage favorites.
 - `MapPin` dla mapy i kamery.
 - `ApiError` albo prosty error model dla UI.
 
@@ -260,7 +262,7 @@ Bezpiecznie rownolegle:
 
 Niebezpiecznie rownolegle:
 
-- Storage agent i UI agent bez ustalonego kontraktu `FavoritePokemon`.
+- Storage agent i UI agent bez ustalonego kontraktu `FavoritePokemonIds`.
 - Camera agent rownolegle z dependency setupem, bo native build moze zmienic konfiguracje.
 - Kilku agentow jednoczesnie zmieniajacych `app/_layout.tsx` albo `package.json`.
 

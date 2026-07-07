@@ -151,7 +151,7 @@ Akcje:
 - Zdefiniowac:
   - `PokemonListItem`,
   - `PokemonDetails`,
-  - `FavoritePokemon`,
+  - `FavoritePokemonIds`,
   - `MapPin`.
 
 Done:
@@ -270,41 +270,54 @@ QA po kroku:
 - Detail pokazuje error state przy niepoprawnej nazwie.
 - `bunx tsc --noEmit` przechodzi.
 
-## Krok 8 - favorite storage i Favorites tab
+## Krok 8 - favorites storage i Favorites tab
 
 Cel:
 
-- Lokalnie zapisywac i wyswietlac ulubionego Pokemona.
+- Lokalnie zapisywac i wyswietlac ulubione Pokemony jako tablice ID.
+
+Paczki:
+
+```bash
+bunx expo install react-native-mmkv react-native-nitro-modules
+bunx expo prebuild
+```
 
 Storage:
 
-- Jedynym zrodlem prawdy dla lokalnego key-value storage jest `kv-store`.
-- Nie dodajemy osobnego AsyncStorage, `localStorage` ani alternatywnego mechanizmu storage dla favorite.
+- Jedynym zrodlem prawdy dla lokalnego key-value storage jest MMKV.
+- Nie dodajemy AsyncStorage, `expo-sqlite/kv-store`, `localStorage` ani alternatywnego mechanizmu storage dla favorite.
+- Key dla favorites to `favoritePokemonIds:v1`.
+- Wartosc to JSON string z `number[]`; nie zapisujemy nazw, obrazkow, `PokemonDetails` ani payloadow PokeAPI.
+- JSON parse ma fallback do `[]`.
+- Dodawanie favorite nie moze tworzyc duplikatow ID.
 
 Akcje:
 
-- Dodac `src/storage/storage.ts` z async wrapperem nad `kv-store`.
+- Dodac `src/storage/storage.ts` z wrapperem nad jedna instancja MMKV: `getString`, `setString`, `remove` i opcjonalnie listener/subscription.
 - Dodac `favorite-storage.ts`.
 - Dodac `useFavoritePokemon`.
 - Podlaczyc "Set favorite" w detail.
 - Zbudowac Favorites tab:
-  - empty state bez favorite,
-  - detail/card z favorite,
-  - header button "Unfavorite".
+  - empty state bez favorites,
+  - liste/card/detail dla zapisanych ID,
+  - akcje usuniecia pojedynczego Pokemona z favorites.
 - Empty/card/detail maja byc proste i funkcjonalne, bez ozdobnego polishu.
 
 Done:
 
-- Favorite zapisuje sie lokalnie.
-- Favorite widac po restarcie aplikacji.
-- Header unfavorite usuwa favorite.
+- Favorites zapisuja sie lokalnie jako tablica ID.
+- Favorites widac po restarcie aplikacji.
+- Usuniecie pojedynczego Pokemona usuwa jego ID ze storage.
 
 QA po kroku:
 
-- Brak favorite pokazuje empty state.
+- Brak favorites pokazuje empty state.
 - Set favorite z detail aktualizuje Favorites tab.
-- Unfavorite usuwa favorite i wraca do empty state.
+- Dodanie kilku Pokemonow nie tworzy duplikatow ID.
+- Unfavorite usuwa pojedynczego Pokemona i wraca do empty state, jezeli lista jest pusta.
 - Restart aplikacji zachowuje aktualny stan storage.
+- Uszkodzony JSON w MMKV nie crashuje UI i daje fallback `[]`.
 
 ## Krok 9 - Map tab
 
@@ -323,7 +336,7 @@ Akcje:
 - Dodac `map-pin-storage.ts`.
 - Dodac `useMapPins`.
 - W `app/(tabs)/(map)/index.tsx` dodac `MapView`.
-- Long press dodaje pinezke z aktualnym favorite Pokemonem.
+- Long press dodaje pinezke z aktualnie wybranym/ostatnim favorite Pokemonem, a przy braku kontekstu favorite uzywa fallbacku.
 - Marker press pokazuje modal/formSheet.
 - Modal pokazuje krotki opis Pokemona i jego obrazek, jezeli jest dostepny.
 - Mapa i modal maja uzywac tylko styli potrzebnych do poprawnych wymiarow, safe area i czytelnosci.

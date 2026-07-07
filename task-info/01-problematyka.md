@@ -17,13 +17,13 @@ Przyjmujemy wiec cztery taby jako zakres implementacji.
 
 ### 1. Favorite Pokemon
 
-- Ekran pokazuje ulubionego Pokemona.
-- Ulubiony Pokemon ma byc zapisany lokalnie.
-- Ekran pokazuje podstawowe informacje i zdjecie Pokemona.
-- Jesli nie ma ulubionego Pokemona, ekran pokazuje empty state.
-- Jesli ulubiony Pokemon istnieje, header ekranu pokazuje przycisk do usuniecia z ulubionych.
+- Ekran pokazuje ulubione Pokemony.
+- Ulubione Pokemony maja byc zapisane lokalnie jako tablica ID.
+- Ekran pokazuje podstawowe informacje i zdjecia Pokemonow pobrane na podstawie zapisanych ID.
+- Jesli nie ma ulubionych Pokemonow, ekran pokazuje empty state.
+- Jesli ulubione Pokemony istnieja, UI pozwala usunac pojedynczego Pokemona z ulubionych.
 
-Decyzja techniczna: jedynym zrodlem prawdy dla lokalnego key-value storage jest async API `expo-sqlite/kv-store`. Tekst zadania wspomina AsyncStorage, ale w tym repo nie instalujemy `@react-native-async-storage/async-storage`, nie uzywamy `expo-sqlite/localStorage/install` i nie piszemy recznych tabel SQLite dla favorite/map pins. `expo-sqlite` instalujemy tylko jako paczke dostarczajaca modul `expo-sqlite/kv-store`.
+Decyzja techniczna: jedynym zrodlem prawdy dla lokalnego key-value storage jest `react-native-mmkv`. Tekst zadania wspomina AsyncStorage, ale w tym repo nie uzywamy `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins. Favorites zapisujemy wylacznie jako JSON string z tablica ID Pokemonow.
 
 ### 2. List of Pokemon
 

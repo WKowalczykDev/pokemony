@@ -111,23 +111,31 @@ Gdzie:
 
 - `src/api/pokeapi.ts`.
 
-### `expo-sqlite`
+### `react-native-mmkv`
 
 Po co:
 
-- dostarcza `expo-sqlite/kv-store`, ktory jest jedynym zrodlem prawdy dla async key-value storage,
-- lokalny zapis ulubionego Pokemona i pinezek.
+- jedyne zrodlo prawdy dla lokalnego key-value storage,
+- lokalny zapis tablicy ID ulubionych Pokemonow i pinezek,
+- szybkie synchroniczne API oparte o natywny modul JSI/Nitro.
 
 Gdzie:
 
 - `src/storage/storage.ts`.
 
+Instalacja:
+
+```bash
+bunx expo install react-native-mmkv react-native-nitro-modules
+bunx expo prebuild
+```
+
 Decyzja:
 
-- Uzywamy wylacznie `expo-sqlite/kv-store` jako aplikacyjnej abstrakcji storage.
-- Nie instalujemy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
-- Nie uzywamy `expo-sqlite/localStorage/install`.
-- Nie tworzymy recznych tabel SQLite dla favorite/map pins; dane ida przez key-value API z `kv-store`.
+- Uzywamy wylacznie `react-native-mmkv` jako aplikacyjnej abstrakcji storage.
+- Nie uzywamy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
+- Nie uzywamy `expo-sqlite/kv-store` ani `expo-sqlite/localStorage/install`.
+- Nie tworzymy recznych tabel SQLite dla favorite/map pins; dane ida przez key-value API z MMKV.
 
 ## Software Mansion stack
 

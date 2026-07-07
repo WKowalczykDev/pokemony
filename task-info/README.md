@@ -19,7 +19,7 @@ Podstawowym zrodlem wymagan jest plik `introductory task 2.0 final.txt`. PDF w t
 - Target implementacyjny: iOS-first, bo projekt ma juz katalog `mobile-app/ios`.
 - Nawigacja: Expo Router z czterema tabami i stackami wewnatrz tabow.
 - Dane: PokeAPI przez natywny `fetch`, zarzadzanie stanem serwerowym przez TanStack Query.
-- Lokalny storage: jedynym zrodlem prawdy dla key-value danych aplikacji jest async API `expo-sqlite/kv-store`. Paczka `expo-sqlite` jest uzywana tylko po to, zeby dostarczyc ten modul. Nie instalujemy `@react-native-async-storage/async-storage`, nie uzywamy `expo-sqlite/localStorage/install` i nie tworzymy recznych tabel SQLite dla favorite/map pins.
+- Lokalny storage: jedynym zrodlem prawdy dla key-value danych aplikacji jest `react-native-mmkv`. Nie uzywamy `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins. Favorites zapisujemy wylacznie jako tablice ID Pokemonow.
 - Package manager: Bun jest domyslnym managerem dla projektu; komendy Expo uruchamiamy przez `bunx`.
 - Software Mansion: korzystamy z paczek SWM jako fundamentu gestow, animacji, ekranow i workletow.
 - Kamera: VisionCamera jest osobnym etapem wysokiego ryzyka, wymagajacym development builda.

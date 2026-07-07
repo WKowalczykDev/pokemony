@@ -10,7 +10,7 @@ Dokumentacja w `task-info` jest gotowa, gdy:
 
 - kazdy plik ma jasna odpowiedzialnosc,
 - wymagania z `introductory task 2.0 final.txt` sa odwzorowane,
-- decyzja storage jest opisana: jedynym zrodlem prawdy dla lokalnych danych key-value jest async API `expo-sqlite/kv-store`; nie uzywamy osobnej paczki `@react-native-async-storage/async-storage`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins,
+- decyzja storage jest opisana: jedynym zrodlem prawdy dla lokalnych danych key-value jest `react-native-mmkv`; nie uzywamy `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins,
 - Software Mansion stack jest nazwany i uzasadniony,
 - roadmapa implementacji jest sekwencyjna i mozliwa do przekazania agentowi,
 - QA zawiera scenariusze dla wszystkich czterech tabow.
@@ -39,7 +39,7 @@ Jesli ktoras komenda nie przechodzi, raport QA musi zawierac:
 
 ## Manual QA - Favorites
 
-### Brak ulubionego Pokemona
+### Brak ulubionych Pokemonow
 
 Kroki:
 
@@ -49,48 +49,50 @@ Kroki:
 Oczekiwane:
 
 - Widac empty state.
-- Nie ma przycisku unfavorite w headerze.
+- Nie ma akcji usuwania favorite.
 - UI nie crashuje.
 
-### Ustawienie ulubionego
+### Dodanie favorites
 
 Kroki:
 
 1. Wejdz w Pokedex.
 2. Otworz dowolnego Pokemona.
 3. Kliknij "Set favorite".
-4. Wroc do Favorites.
+4. Otworz drugiego Pokemona i kliknij "Set favorite".
+5. Wroc do Favorites.
 
 Oczekiwane:
 
-- Favorites pokazuje wybranego Pokemona.
-- Widac zdjecie i podstawowe informacje.
-- Header pokazuje akcje unfavorite.
+- Favorites pokazuje wybrane Pokemony.
+- Widac zdjecia i podstawowe informacje pobrane na podstawie zapisanych ID.
+- Ponowne dodanie tego samego Pokemona nie tworzy duplikatu.
 
-### Trwalosc favorite
+### Trwalosc favorites
 
 Kroki:
 
-1. Ustaw favorite.
+1. Ustaw kilka favorites.
 2. Zamknij i uruchom aplikacje ponownie.
 3. Wejdz w Favorites.
 
 Oczekiwane:
 
-- Favorite nadal jest widoczny.
+- Favorites nadal sa widoczne.
 
 ### Usuniecie favorite
 
 Kroki:
 
-1. Majac ustawionego favorite, wejdz w Favorites.
-2. Kliknij header action unfavorite.
+1. Majac ustawione favorites, wejdz w Favorites.
+2. Usun jednego Pokemona z listy.
 
 Oczekiwane:
 
-- Favorite znika.
-- Pojawia sie empty state.
-- Po restarcie aplikacji nadal nie ma favorite.
+- Usuniety Pokemon znika.
+- Pozostale favorites zostaja widoczne.
+- Po usunieciu ostatniego Pokemona pojawia sie empty state.
+- Po restarcie aplikacji usuniete ID nie wraca.
 
 ## Manual QA - Pokedex
 

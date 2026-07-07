@@ -8,19 +8,20 @@ Ten plik jest osobna, robocza checklista wymagan przygotowana na bazie `introduc
 - [ ] Nawigacja ma byc oparta o Expo Router.
 - [ ] Kazdy tab moze miec wlasny stack navigator.
 - [ ] Target implementacyjny jest iOS-first.
-- [ ] Lokalny zapis favorite robimy wylacznie przez async API `expo-sqlite/kv-store`, bez instalowania `@react-native-async-storage/async-storage`, bez `expo-sqlite/localStorage/install` i bez recznych tabel SQLite.
+- [ ] Lokalny zapis favorites robimy wylacznie przez `react-native-mmkv`, bez `@react-native-async-storage/async-storage`, bez `expo-sqlite/kv-store`, bez `expo-sqlite/localStorage/install` i bez recznych tabel SQLite.
+- [ ] Favorites sa zapisane wylacznie jako tablica ID Pokemonow, bez nazw, obrazkow i payloadow PokeAPI.
 - [ ] Bun jest domyslnym package managerem.
 
-## Favorite Pokemon tab
+## Favorites Pokemon tab
 
-- [ ] Ekran pokazuje ulubionego Pokemona, jesli istnieje.
-- [ ] Ulubiony Pokemon jest zapisany lokalnie.
-- [ ] Ekran pokazuje podstawowe informacje o Pokemonie.
-- [ ] Ekran pokazuje zdjecie Pokemona.
-- [ ] Brak ulubionego Pokemona pokazuje empty state.
-- [ ] Przy istniejacym favorite header pokazuje przycisk unfavorite.
-- [ ] Unfavorite usuwa Pokemona ze storage.
-- [ ] Favorite pozostaje po restarcie aplikacji.
+- [ ] Ekran pokazuje ulubione Pokemony, jesli istnieja.
+- [ ] Ulubione Pokemony sa zapisane lokalnie jako tablica ID.
+- [ ] Ekran pokazuje podstawowe informacje o Pokemonach pobrane na podstawie ID.
+- [ ] Ekran pokazuje zdjecia Pokemonow.
+- [ ] Brak ulubionych Pokemonow pokazuje empty state.
+- [ ] UI pozwala usunac pojedynczego Pokemona z favorites.
+- [ ] Unfavorite usuwa ID Pokemona ze storage.
+- [ ] Favorites pozostaja po restarcie aplikacji.
 
 ## List of Pokemon tab
 
@@ -33,7 +34,7 @@ Ten plik jest osobna, robocza checklista wymagan przygotowana na bazie `introduc
 - [ ] Lista pokazuje zdjecia Pokemonow, jesli dane sa dostepne.
 - [ ] Zdjecia laduja sie lazy/cache-friendly przez `expo-image`.
 - [ ] Klikniecie Pokemona otwiera ekran szczegolow.
-- [ ] Ekran szczegolow jest podobny do Favorite Pokemon.
+- [ ] Ekran szczegolow jest podobny do widoku Favorites.
 - [ ] Ekran szczegolow pozwala ustawic Pokemona jako favorite.
 
 ## Bonus dla listy/detail
