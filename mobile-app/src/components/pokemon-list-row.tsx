@@ -23,6 +23,7 @@ export function PokemonListRow({ name, imageUrl, onPress }: PokemonListRowProps)
         recyclingKey={imageUrl ?? name}
         source={imageUrl ? { uri: imageUrl } : undefined}
         style={styles.image}
+        cachePolicy="memory-disk"
       />
       <View style={styles.content}>
         <Text numberOfLines={1} style={styles.name}>

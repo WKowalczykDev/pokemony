@@ -61,6 +61,7 @@ export function PokemonDetail({
         recyclingKey={activeImageUrl ?? pokemon.name}
         source={activeImageUrl ? { uri: activeImageUrl } : undefined}
         style={styles.image}
+        cachePolicy="memory-disk"
       />
 
       <Text style={styles.title}>{formatName(pokemon.name)}</Text>
