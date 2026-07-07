@@ -4,6 +4,10 @@
     "slug": "pokemony",
     "scheme": "pokemony",
     "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +25,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.wkowdev.pokemony"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,6 +40,10 @@
     "experiments": {
       "typedRoutes": true
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-image"]
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-image"
+    ]
   }
 }
