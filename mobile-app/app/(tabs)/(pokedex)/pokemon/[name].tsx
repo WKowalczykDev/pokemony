@@ -1,7 +1,7 @@
 import { BottomSheet } from "@swmansion/react-native-bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import { StyleSheet, useWindowDimensions, View, Pressable } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { ErrorState, LoadingState, PokemonDetail } from "@/components";
 import { usePokemonDetails } from "@/hooks/use-pokemon-details";
@@ -21,11 +21,7 @@ export default function PokemonDetailRoute() {
   const [sheetIndex, setSheetIndex] = useState(defaultSheetIndex);
   const isClosingRef = useRef(false);
   const { data, error, isError, isPending, refetch } = usePokemonDetails(pokemonName);
-  const detents = [
-    closedSheetIndex,
-    Math.round(height * 0.50),
-    Math.round(height * 0.92),
-  ];
+  const detents = [closedSheetIndex, Math.round(height * 0.5), Math.round(height * 0.92)];
 
   const closeRoute = useCallback(() => {
     if (isClosingRef.current) {
@@ -87,7 +83,7 @@ export default function PokemonDetailRoute() {
               title="Could not load Pokemon"
             />
           ) : null}
-          {data ? <PokemonDetail pokemon={data} onSetFavorite={() => { }} /> : null}
+          {data ? <PokemonDetail pokemon={data} onSetFavorite={() => {}} /> : null}
         </View>
       </BottomSheet>
     </View>
@@ -98,11 +94,11 @@ const styles = StyleSheet.create({
   container: {
     minHeight: 160,
   },
+  screen: {
+    flex: 1,
+  },
   surface: {
     ...StyleSheet.absoluteFill,
     backgroundColor: colors.background,
   },
-  screen: {
-    flex: 1,
-  }
 });

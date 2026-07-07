@@ -26,15 +26,6 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="pokemon/[name]"
-              options={{
-                animation: "fade",
-                contentStyle: { backgroundColor: "transparent" },
-                headerShown: false,
-                presentation: "transparentModal",
-              }}
-            />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
