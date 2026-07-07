@@ -7,7 +7,9 @@ import type { PokemonDetails } from "@/types/pokemon";
 
 type PokemonDetailProps = {
   pokemon: PokemonDetails;
-  onSetFavorite: () => void;
+  isFavorite?: boolean;
+  onRemoveFavorite?: () => void;
+  onSetFavorite?: () => void;
 };
 
 const SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
@@ -20,7 +22,12 @@ function getPokemonSpriteUrl(id: number) {
   return `${SPRITE_BASE_URL}/${id}.png`;
 }
 
-export function PokemonDetail({ pokemon, onSetFavorite }: PokemonDetailProps) {
+export function PokemonDetail({
+  pokemon,
+  isFavorite = false,
+  onRemoveFavorite,
+  onSetFavorite,
+}: PokemonDetailProps) {
   const fallbackImageUrl = useMemo(() => getPokemonSpriteUrl(pokemon.id), [pokemon.id]);
   const initialImageUrl = pokemon.imageUrl || fallbackImageUrl;
   const imageStateKey = `${pokemon.id}:${initialImageUrl}`;
@@ -41,6 +48,9 @@ export function PokemonDetail({ pokemon, onSetFavorite }: PokemonDetailProps) {
       stateKey: imageStateKey,
     });
   }, [activeImageUrl, fallbackImageUrl, imageStateKey]);
+
+  const favoriteAction = isFavorite ? onRemoveFavorite : onSetFavorite;
+  const favoriteLabel = isFavorite ? "Remove favorite" : "Set favorite";
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -71,9 +81,11 @@ export function PokemonDetail({ pokemon, onSetFavorite }: PokemonDetailProps) {
         </Text>
       ))}
 
-      <Pressable accessibilityRole="button" onPress={onSetFavorite} style={styles.button}>
-        <Text style={styles.buttonText}>Set favorite</Text>
-      </Pressable>
+      {favoriteAction ? (
+        <Pressable accessibilityRole="button" onPress={favoriteAction} style={styles.button}>
+          <Text style={styles.buttonText}>{favoriteLabel}</Text>
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }

@@ -2,6 +2,7 @@ import { ModalBottomSheet } from "@swmansion/react-native-bottom-sheet";
 import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 
+import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
 import { usePokemonDetails } from "@/hooks/use-pokemon-details";
 import { colors } from "@/theme/colors";
 
@@ -24,10 +25,9 @@ export function PokemonDetailSheet({
   selectedPokemonName,
 }: PokemonDetailSheetProps) {
   const { height } = useWindowDimensions();
-  const [sheetIndex, setSheetIndex] = useState(
-    isOpen ? defaultSheetIndex : closedSheetIndex,
-  );
+  const [sheetIndex, setSheetIndex] = useState(isOpen ? defaultSheetIndex : closedSheetIndex);
   const { data, error, isError, isPending, refetch } = usePokemonDetails(selectedPokemonName);
+  const { isFavorite, removeFavorite, setFavorite } = useFavoritePokemon();
   const detents = useMemo(
     () => [closedSheetIndex, Math.round(height * 0.5), Math.round(height * 0.92)],
     [height],
@@ -68,7 +68,18 @@ export function PokemonDetailSheet({
             title="Could not load Pokemon"
           />
         ) : null}
-        {data ? <PokemonDetail pokemon={data} onSetFavorite={() => {}} /> : null}
+        {data ? (
+          <PokemonDetail
+            isFavorite={isFavorite(data.id)}
+            onRemoveFavorite={() => {
+              removeFavorite(data.id);
+            }}
+            onSetFavorite={() => {
+              setFavorite(data.id);
+            }}
+            pokemon={data}
+          />
+        ) : null}
       </View>
     </ModalBottomSheet>
   );

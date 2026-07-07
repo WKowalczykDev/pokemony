@@ -54,6 +54,8 @@ export type PokemonDetails = {
   stats: PokemonStat[];
 };
 
+export type FavoritePokemonIds = number[];
+
 export type FavoritePokemon = {
   id: number;
   name: string;
