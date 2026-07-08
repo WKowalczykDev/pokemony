@@ -1,92 +1,140 @@
 # Problematyka zadania
 
-## Cel
+Ten plik rozdziela pierwotny zakres zadania od aktualnych preferencji
+uzytkownika. Pierwotne wymagania sa kontekstem. Nie oznaczaja, ze agent ma sam
+wdrozyc wszystkie funkcje.
 
-Trzeba zbudowac starterowa aplikacje mobilna Pokemony, ktora pobiera dane z [PokeAPI](https://pokeapi.co/), pozwala wybrac ulubionego Pokemona, wyswietla liste Pokemonow, korzysta z kamery oraz pokazuje pinezki na mapie.
+## Aktualna zasada nadrzedna
 
-Zadanie z tekstu mowi o "3 tabs", ale wymienia cztery widoki:
+Agent implementuje tylko czesc wskazana przez uzytkownika. Jezeli uzytkownik
+daje do developmentu tylko jeden ekran albo jedna funkcje, agent nie dodaje
+reszty aplikacji przy okazji.
+
+Rozwiazanie ma byc mozliwie minimalne:
+
+- minimum kodu potrzebnego do dzialania,
+- minimum styli potrzebnych do czytelnosci i stabilnego layoutu,
+- brak dekoracyjnego polishu bez prosby,
+- brak niepotrzebnych paczek,
+- brak bonusow bez jasnego polecenia.
+
+## Pierwotny cel zadania
+
+Zadanie dotyczy aplikacji mobilnej Pokemony, ktora moze:
+
+- pobierac dane z PokeAPI,
+- pokazywac liste Pokemonow,
+- pozwalac wybrac ulubionego Pokemona,
+- korzystac z kamery,
+- pokazywac pinezki na mapie.
+
+Tekst zadania wspomina "3 tabs", ale wymienia cztery widoki:
 
 1. Favorite Pokemon tab.
 2. List of Pokemon tab.
 3. Camera screen.
 4. Map tab.
 
-Przyjmujemy wiec cztery taby jako zakres implementacji.
+To jest notatka interpretacyjna. Cztery taby nie musza powstac naraz.
 
-## Wymagania funkcjonalne
+## Mozliwe czesci funkcjonalne
 
-### 1. Favorite Pokemon
+### Favorite Pokemon
 
-- Ekran pokazuje ulubione Pokemony.
-- Ulubione Pokemony maja byc zapisane lokalnie jako tablica ID.
-- Ekran pokazuje podstawowe informacje i zdjecia Pokemonow pobrane na podstawie zapisanych ID.
-- Jesli nie ma ulubionych Pokemonow, ekran pokazuje empty state.
-- Jesli ulubione Pokemony istnieja, UI pozwala usunac pojedynczego Pokemona z ulubionych.
+Mozliwy zakres:
 
-Decyzja techniczna: jedynym zrodlem prawdy dla lokalnego key-value storage jest `react-native-mmkv`. Tekst zadania wspomina AsyncStorage, ale w tym repo nie uzywamy `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins. Favorites zapisujemy wylacznie jako JSON string z tablica ID Pokemonow.
+- pokazanie ulubionych Pokemonow,
+- lokalny zapis ulubionych jako tablica ID,
+- empty state przy braku ulubionych,
+- usuniecie pojedynczego ulubionego Pokemona.
 
-### 2. List of Pokemon
+Preferencja minimalna:
 
-- Ekran pokazuje liste Pokemonow pobierana z PokeAPI.
-- Lista ma obslugiwac infinite scrolling, czyli pobieranie kolejnych stron danych.
-- Lista ma obslugiwac pull-to-refresh.
-- Zdjecia Pokemonow w liscie sa "nice to have", ale warto je dodac, bo mocno poprawiaja UX.
-- Klikniecie Pokemona otwiera ekran szczegolow podobny do widoku favorite.
-- Na ekranie szczegolow uzytkownik moze ustawic danego Pokemona jako ulubionego.
+- bez rozbudowanych kart,
+- bez animacji,
+- bez dodatkowych danych, jezeli nie sa potrzebne,
+- storage tylko wtedy, gdy etap favorite jest faktycznie robiony.
 
-Bonus: szczegoly Pokemona mozna pokazac jako bottom sheet nad lista. Dla MVP najpierw uzywamy stack navigation, a bottom sheet zostawiamy jako etap polish/bonus.
+### List of Pokemon
 
-### 3. Crazy Vision Camera
+Mozliwy zakres:
 
-- Ekran korzysta z `react-native-vision-camera`.
-- Wariant bazowy: wykrywanie twarzy i nalozenie obrazka ulubionego Pokemona na czolo.
-- Alternatywa z zadania: wykrycie obiektu, na przyklad banana, i zastapienie go obrazkiem Pokemona.
-- Dodatkowo mozna zapisac wygenerowane zdjecie do pamieci telefonu.
-- Dodatkowo mozna zapisac lokalizacje wykonania zdjecia i pokazac ja pozniej na mapie.
+- pobieranie listy z PokeAPI,
+- paginacja albo infinite scroll,
+- pull-to-refresh,
+- przejscie do szczegolow Pokemona.
 
-Ten etap jest najbardziej ryzykowny, bo VisionCamera i frame processing wymagaja development builda, konfiguracji natywnej i testow na realnym urzadzeniu lub symulatorze z kompatybilnymi bibliotekami.
+Preferencja minimalna:
 
-### 4. Map
+- zwykla lista,
+- proste loading/error/empty,
+- natywny `fetch`,
+- bez `axios`,
+- obrazki tylko jezeli sa juz potrzebne dla danego ekranu.
 
-- Ekran pokazuje mape.
-- Long press na mapie dodaje nowa pinezke.
-- Klikniecie pinezki pokazuje bottom sheet albo modal-like view.
-- Widok pinezki zawiera krotki opis, ktorego Pokemona dotyczy pinezka.
-- Komponent szczegolow Pokemona powinien byc wspoldzielony z ekranem detail/list, zeby nie duplikowac logiki.
+### Pokemon detail
 
-## Wymagania niefunkcjonalne
+Mozliwy zakres:
 
-- Nawigacja powinna byc zrobiona przez Expo Router.
-- Tab navigator powinien miec zagniezdzone stack navigators tam, gdzie jest to potrzebne.
-- Projekt powinien miec ESLint i Prettier.
-- Kod wygenerowany przez AI ma byc zrozumiany i zweryfikowany, a nie przyjety bez kontroli.
-- Aplikacja powinna miec czytelne empty states, loading states i error states.
-- UI powinno byc stabilne na iOS, z zachowaniem safe area i natywnych wzorcow nawigacji.
+- nazwa,
+- obrazek,
+- typy,
+- podstawowe informacje,
+- akcja ustawienia favorite, jezeli favorite storage juz istnieje albo jest
+  aktualnie wdrazany.
 
-## Zakres MVP
+Preferencja minimalna:
 
-MVP jest gotowe, gdy:
+- stack route zamiast bottom sheet,
+- proste teksty i spacing,
+- brak dodatkowych sekcji, jezeli nie sa wymagane.
 
-- Sa cztery taby: Favorites, Pokedex, Camera, Map.
-- Lista Pokemonow pobiera dane z PokeAPI i ma paginacje.
-- Detail Pokemona pokazuje zdjecie i podstawowe informacje.
-- Uzytkownik moze ustawic i usunac ulubionego Pokemona.
-- Favorite przetrwa restart aplikacji.
-- Map pozwala dodawac i ogladac pinezki.
-- Camera ma ekran uprawnien i stabilny fallback, nawet jesli zaawansowany overlay nie jest jeszcze skonczony.
+### Camera
+
+Kamera jest funkcja wysokiego kosztu i ryzyka. Wymaga natywnych paczek,
+permission flow i czesto development builda.
+
+Nie implementowac kamery bez wyraznej prosby.
+
+Mozliwy zakres dopiero na prosbe:
+
+- permission flow,
+- preview,
+- capture,
+- overlay ulubionego Pokemona,
+- zapis zdjecia.
+
+### Map
+
+Mapa wymaga natywnej paczki i osobnego testu UI.
+
+Nie implementowac mapy bez wyraznej prosby.
+
+Mozliwy zakres dopiero na prosbe:
+
+- render mapy,
+- long press dodajacy pin,
+- klik marker pokazujacy prosty opis,
+- lokalny zapis pinow.
 
 ## Bonusy
 
-- Bottom sheet dla szczegolow Pokemona.
-- Animowane przejscia i mikrointerakcje przez Reanimated.
-- Haptics dla wyboru favorite, long press na mapie i wykonania zdjecia.
-- Zapis zdjecia z kamery do galerii.
-- Zapis lokalizacji zdjecia i automatyczne dodanie pinezki na mapie.
-- Lepsze cache obrazkow przez `expo-image`.
+Ponizsze rzeczy sa opcjonalne i tylko na wyrazna prosbe:
+
+- bottom sheet,
+- animacje,
+- haptics,
+- zaawansowany polish,
+- zapis zdjec do galerii,
+- lokalizacja zdjec,
+- face detection,
+- automatyczne piny z kamery.
 
 ## Glowne ryzyka
 
-- VisionCamera wymaga development builda, wiec nie wszystko zadziala w Expo Go.
-- Face detector moze miec ograniczenia na niektorych symulatorach iOS.
-- PokeAPI moze byc chwilowo niedostepne albo wolne, wiec UI musi miec retry/error states.
-- Mapa na iOS powinna dzialac na apple mapsach, powinno istniec pozniejsze ewentualne przygotowanie pod rozszerzenie o androida i implementacje z google mapsa
+- VisionCamera moze wymagac development builda lub fizycznego urzadzenia.
+- Mapy i lokalizacja moga wymagac dodatkowych uprawnien i konfiguracji.
+- PokeAPI moze byc wolne albo niedostepne.
+- Instalowanie paczek natywnych moze wymagac rebuilda.
+
+Te ryzyka maja znaczenie tylko wtedy, gdy dana funkcja jest aktualnie robiona.

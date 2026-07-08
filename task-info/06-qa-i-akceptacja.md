@@ -1,321 +1,147 @@
 # QA i kryteria akceptacji
 
-## Cel QA
+QA ma byc proporcjonalne do faktycznej zmiany. Nie trzeba wykonywac pelnego QA
+aplikacji, jezeli zmiana dotyczy tylko jednego pliku, jednego ekranu albo samej
+dokumentacji.
 
-QA ma potwierdzic, ze aplikacja spelnia wymagania z zadania, nie crashuje w podstawowych przeplywach i ma zrozumiale fallbacki dla bledow API, pustych danych oraz braku uprawnien.
+## Zasada ogolna
 
-## Kontrola dokumentacji
+Sprawdzamy tylko to, co zostalo zmienione, oraz najblizsze ryzyko integracyjne.
 
-Dokumentacja w `task-info` jest gotowa, gdy:
+Nie uruchamiaj kosztownych testow, natywnych buildow ani Argent/UI QA bez
+potrzeby lub wyraznej prosby.
 
-- kazdy plik ma jasna odpowiedzialnosc,
-- wymagania z `introductory task 2.0 final.txt` sa odwzorowane,
-- decyzja storage jest opisana: jedynym zrodlem prawdy dla lokalnych danych key-value jest `react-native-mmkv`; nie uzywamy `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins,
-- Software Mansion stack jest nazwany i uzasadniony,
-- roadmapa implementacji jest sekwencyjna i mozliwa do przekazania agentowi,
-- QA zawiera scenariusze dla wszystkich czterech tabow.
+## Dokumentacja
 
-## Static checks
-
-Uruchomic z katalogu `mobile-app`:
+Dla zmian w Markdown:
 
 ```bash
-bunx tsc --noEmit
-bunx expo lint
-bunx prettier . --check
+git diff -- AGENTS.md task-info
+git status --short
 ```
 
 Akceptacja:
 
-- TypeScript przechodzi bez bledow.
-- Lint przechodzi bez bledow krytycznych.
-- Prettier nie wykrywa nieformatowanych plikow.
+- diff dotyczy tylko planowanych plikow,
+- dokumenty nie sugeruja automatycznej implementacji calej roadmapy,
+- funkcje opcjonalne sa opisane jako tylko na wyrazna prosbe,
+- preferencja minimalnych styli i minimalnego zakresu jest jasna.
 
-Jesli ktoras komenda nie przechodzi, raport QA musi zawierac:
+Nie trzeba uruchamiac TypeScript ani lint, jezeli zmiana dotyczy tylko Markdown.
 
-- dokladna komende,
-- najwazniejsze bledy,
-- decyzje: fix teraz czy znane ograniczenie.
+## Static checks dla kodu
 
-## Manual QA - Favorites
+Uruchamiac z katalogu `mobile-app`, gdy zmiana dotyczy kodu TypeScript albo
+konfiguracji aplikacji:
 
-### Brak ulubionych Pokemonow
+```bash
+bunx tsc --noEmit
+```
 
-Kroki:
+Jezeli projekt ma skonfigurowany lint albo zmiana dotyczy lintowanych plikow:
 
-1. Uruchom aplikacje z pustym storage.
-2. Wejdz w tab Favorites.
+```bash
+bunx expo lint
+```
 
-Oczekiwane:
+Jezeli zmiana dotyczy formatowania wielu plikow:
 
-- Widac empty state.
-- Nie ma akcji usuwania favorite.
-- UI nie crashuje.
+```bash
+bunx prettier . --check
+```
 
-### Dodanie favorites
+Raport QA powinien podac dokladna komende i wynik.
 
-Kroki:
+## Manual QA - zasada
 
-1. Wejdz w Pokedex.
-2. Otworz dowolnego Pokemona.
-3. Kliknij "Set favorite".
-4. Otworz drugiego Pokemona i kliknij "Set favorite".
-5. Wroc do Favorites.
+Manual QA rob tylko dla ekranu lub przeplywu, ktory byl zmieniany.
 
-Oczekiwane:
+Przyklad:
 
-- Favorites pokazuje wybrane Pokemony.
-- Widac zdjecia i podstawowe informacje pobrane na podstawie zapisanych ID.
-- Ponowne dodanie tego samego Pokemona nie tworzy duplikatu.
+- zmiana Pokedex -> testuj Pokedex,
+- zmiana Favorites -> testuj Favorites,
+- zmiana Map -> testuj Map,
+- zmiana Camera -> testuj Camera,
+- zmiana dokumentacji -> nie testuj UI.
 
-### Trwalosc favorites
+## Pokedex QA
 
-Kroki:
+Stosowac tylko, gdy Pokedex jest dotkniety.
 
-1. Ustaw kilka favorites.
-2. Zamknij i uruchom aplikacje ponownie.
-3. Wejdz w Favorites.
+Mozliwe scenariusze:
 
-Oczekiwane:
+- pierwsze ladowanie pokazuje dane albo loading,
+- error state nie daje bialej strony,
+- paginacja dziala, jezeli zostala zaimplementowana,
+- pull-to-refresh dziala, jezeli zostal zaimplementowany,
+- przejscie do detail dziala, jezeli jest w zakresie.
 
-- Favorites nadal sa widoczne.
+## Detail QA
 
-### Usuniecie favorite
+Stosowac tylko, gdy Pokemon detail jest dotkniety.
 
-Kroki:
+Mozliwe scenariusze:
 
-1. Majac ustawione favorites, wejdz w Favorites.
-2. Usun jednego Pokemona z listy.
+- route otwiera sie dla poprawnej nazwy,
+- back navigation dziala,
+- error state dziala dla niepoprawnej nazwy,
+- akcja favorite dziala tylko jezeli favorite jest w zakresie.
 
-Oczekiwane:
+## Favorites QA
 
-- Usuniety Pokemon znika.
-- Pozostale favorites zostaja widoczne.
-- Po usunieciu ostatniego Pokemona pojawia sie empty state.
-- Po restarcie aplikacji usuniete ID nie wraca.
+Stosowac tylko, gdy Favorites albo storage favorite sa dotkniete.
 
-## Manual QA - Pokedex
+Mozliwe scenariusze:
 
-### Pierwsze ladowanie
+- brak favorites pokazuje empty state,
+- dodanie favorite zapisuje ID,
+- ponowne dodanie nie robi duplikatu,
+- usuniecie usuwa pojedynczy ID,
+- restart zachowuje stan, jezeli storage jest zaimplementowany.
 
-Kroki:
+## Map QA
 
-1. Wejdz w Pokedex.
+Stosowac tylko, gdy Map tab jest dotkniety.
 
-Oczekiwane:
+Mozliwe scenariusze:
 
-- Widac loading state.
-- Po chwili widac liste Pokemonow.
-- Row zawiera nazwe i najlepiej obrazek.
+- mapa renderuje sie w dostepnym obszarze,
+- long press dodaje pin, jezeli jest w zakresie,
+- marker pokazuje opis, jezeli jest w zakresie,
+- piny zostaja po restarcie, jezeli storage jest w zakresie.
 
-### Infinite scroll
+## Camera QA
 
-Kroki:
+Stosowac tylko, gdy Camera tab jest dotkniety.
 
-1. Scrolluj do dolu listy.
+Mozliwe scenariusze:
 
-Oczekiwane:
-
-- Pobiera sie kolejna strona.
-- Lista nie skacze.
-- Nie ma duplikatow wynikajacych z blednego merge stron.
-
-### Pull-to-refresh
-
-Kroki:
-
-1. Pociagnij liste w dol.
-
-Oczekiwane:
-
-- Widac refresh indicator.
-- Dane odswiezaja sie bez crasha.
-
-### Detail
-
-Kroki:
-
-1. Kliknij dowolnego Pokemona.
-
-Oczekiwane:
-
-- Otwiera sie ekran detail.
-- Widac nazwe, obrazek, typy i podstawowe dane.
-- Jest akcja ustawienia favorite.
-- Back navigation dziala.
-
-### Error state
-
-Kroki:
-
-1. Zasymuluj brak internetu albo blad API, jesli jest to mozliwe.
-
-Oczekiwane:
-
-- Ekran pokazuje zrozumialy error state.
-- Jest retry.
-- UI nie pokazuje pustej bialej strony.
-
-## Manual QA - Map
-
-### Wyswietlenie mapy
-
-Kroki:
-
-1. Wejdz w Map tab.
-
-Oczekiwane:
-
-- Mapa renderuje sie na calym dostepnym obszarze.
-- UI respektuje safe area i tab bar.
-
-### Dodanie pinezki
-
-Kroki:
-
-1. Wykonaj long press na mapie.
-
-Oczekiwane:
-
-- Pojawia sie pin w miejscu klikniecia.
-- Jesli istnieje favorite, pin jest powiazany z tym Pokemonem.
-- Jesli nie ma favorite, aplikacja pokazuje jasny fallback.
-
-### Opis pinezki
-
-Kroki:
-
-1. Kliknij marker.
-
-Oczekiwane:
-
-- Pojawia sie modal, formSheet albo bottom sheet.
-- Widac opis, ktorego Pokemona dotyczy pin.
-- Widok da sie zamknac.
-
-### Trwalosc pinezek
-
-Kroki:
-
-1. Dodaj pin.
-2. Zrestartuj aplikacje.
-3. Wroc do Map tab.
-
-Oczekiwane:
-
-- Pin nadal istnieje.
-
-## Manual QA - Camera
-
-### Brak uprawnien
-
-Kroki:
-
-1. Odrzuc uprawnienia kamery.
-2. Wejdz w Camera tab.
-
-Oczekiwane:
-
-- Widac ekran proszacy o permission.
-- Aplikacja nie crashuje.
-- Jest jasna akcja ponowienia prosby albo instrukcja systemowa.
-
-### Brak favorite
-
-Kroki:
-
-1. Usun favorite.
-2. Daj permission kamery.
-3. Wejdz w Camera tab.
-
-Oczekiwane:
-
-- Kamera moze pokazac preview albo empty overlay.
-- UI jasno mowi, ze overlay wymaga wybrania favorite.
-- Nie ma crasha.
-
-### Preview kamery
-
-Kroki:
-
-1. Ustaw favorite.
-2. Daj permission kamery.
-3. Wejdz w Camera tab.
-
-Oczekiwane:
-
-- Preview kamery dziala w development buildzie.
-- Elementy sterujace nie wchodza pod safe area.
-
-### Face overlay
-
-Kroki:
-
-1. Skieruj kamere na twarz.
-
-Oczekiwane:
-
-- Obrazek favorite Pokemona pojawia sie w okolicy czola.
-- Overlay nie migocze nadmiernie.
-- Brak twarzy nie powoduje bledu.
-
-### Zapis zdjecia
-
-Kroki:
-
-1. Kliknij capture.
-2. Daj permission galerii, jesli system poprosi.
-
-Oczekiwane:
-
-- Zdjecie zapisuje sie do galerii.
-- Aplikacja pokazuje sukces albo blad.
-- Odmowa galerii nie crashuje aplikacji.
-
-### Lokalizacja zdjecia
-
-Kroki:
-
-1. Wykonaj zdjecie z wlaczona lokalizacja.
-2. Wejdz w Map tab.
-
-Oczekiwane:
-
-- Jesli permission location jest przyznane, pojawia sie pin ze `source: "camera"`.
-- Jesli permission location jest odrzucone, zdjecie nadal moze byc wykonane.
+- brak permission nie crashuje,
+- permission flow jest zrozumialy,
+- preview dziala w development buildzie, jezeli kamera jest w zakresie,
+- overlay dziala tylko jezeli face detection jest w zakresie,
+- ograniczenia symulatora lub fizycznego urzadzenia sa opisane.
 
 ## Argent/UI QA
 
-Jezeli aplikacja jest uruchomiona na symulatorze lub urzadzeniu, uzyc Argent do:
+Argent/UI QA jest opcjonalne. Uzywac tylko wtedy, gdy:
 
-- screenshotu kazdego taba,
-- sprawdzenia, czy tekst nie nachodzi na elementy,
-- przejscia Pokedex -> Detail -> Set favorite -> Favorites,
-- przejscia Map -> long press -> marker -> modal,
-- sprawdzenia Camera permission state.
+- uzytkownik wyraznie poprosi,
+- zmiana UI jest ryzykowna,
+- aplikacja jest juz uruchamialna i warto potwierdzic layout screenshotami.
 
-Akceptacja:
+Nie jest wymagane dla zmian dokumentacji ani malych zmian logicznych.
 
-- Kazdy glowny ekran ma screenshot bez oczywistych bledow layoutu.
-- Najwazniejszy przeplyw favorite dziala end-to-end.
+## Release readiness
 
-## Release readiness checklist
+Release readiness dotyczy tylko faktycznie zaimplementowanego zakresu.
 
-- [ ] Cztery taby sa dostepne.
-- [ ] Pokedex laduje dane z PokeAPI.
-- [ ] Infinite scroll dziala.
-- [ ] Pull-to-refresh dziala.
-- [ ] Detail pokazuje podstawowe informacje.
-- [ ] Favorite mozna ustawic.
-- [ ] Favorite mozna usunac.
-- [ ] Favorite przetrwa restart.
-- [ ] Map renderuje sie.
-- [ ] Long press dodaje pin.
-- [ ] Marker pokazuje opis.
-- [ ] Piny przetrwaja restart.
-- [ ] Camera ma permission flow.
-- [ ] Camera ma fallback dla braku favorite.
-- [ ] VisionCamera dziala w development buildzie albo ograniczenie jest jawnie opisane.
-- [ ] ESLint jest skonfigurowany.
-- [ ] Prettier jest skonfigurowany.
-- [ ] TypeScript przechodzi.
+Nie oznaczaj jako brakow funkcji, ktore sa tylko opcjonalnymi notatkami albo
+ktorych uzytkownik jeszcze nie dal do developmentu.
+
+Minimalny raport finalny:
+
+- static checks,
+- manual QA dla istniejacych przeplywow,
+- znane ograniczenia,
+- czego nie sprawdzono.

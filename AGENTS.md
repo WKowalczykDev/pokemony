@@ -1,64 +1,85 @@
 # Pokemony agent guide
 
-Ten plik jest glowna instrukcja dla agentow pracujacych nad repo. Ma pomagac w pracy krok po kroku: uzytkownik bedzie prosil o kolejne etapy, a agent ma realizowac je zgodnie z planem z `task-info`.
+Ten plik opisuje, jak agent ma pracowac w tym repo. Dokumentacja w `task-info`
+jest przede wszystkim notatka uzytkownika i materialem referencyjnym. Nie jest
+automatyczna lista rzeczy do zaimplementowania.
 
 ## Najwazniejsza zasada
 
-Przed kazda zmiana kodu:
+Agent robi tylko ten zakres, o ktory uzytkownik wyraznie poprosi.
 
-1. Przeczytaj ten plik.
-2. Przeczytaj `mobile-app/AGENTS.md`.
-3. Przeczytaj odpowiedni krok z `task-info/05-plan-implementacji-krok-po-kroku.md`.
-4. Jezeli krok dotyka architektury, paczek, storage, kamery albo QA, doczytaj powiazany plik z `task-info`.
-5. Dopiero potem edytuj kod.
+Jezeli prompt wskazuje jedna czesc, ekran, paczke albo etap, agent ma wykonac
+tylko ten zakres oraz najmniejsze niezbedne poprawki integracyjne. Nie wolno
+dodawac kolejnych funkcji "przy okazji", nawet jezeli sa opisane w `task-info`.
 
-Nie implementuj kilku duzych krokow naraz, chyba ze uzytkownik wyraznie o to poprosi. Domyslnie robimy jeden krok planu na jeden prompt.
+Jezeli zakres jest niejasny:
+
+1. Sprawdz aktualny stan repo.
+2. Sprawdz powiazane notatki w `task-info`.
+3. Wybierz najmniejszy sensowny zakres albo zadaj krotkie pytanie, jesli bez
+   tego latwo zrobic zla rzecz.
+
+## Jak traktowac `task-info`
+
+- `task-info` to kontekst, inspiracja i lista mozliwych kierunkow.
+- Pliki w `task-info` nie sa nakazem wykonania calej roadmapy.
+- Jezeli uzytkownik poda konkretna czesc do developmentu, agent moze wzorowac
+  sie na odpowiednim pliku albo etapie.
+- Jezeli uzytkownik nie poda czesci, agent nie powinien sam zaczynac duzego
+  etapu z roadmapy.
 
 ## Gdzie jest kod
 
 - Kod aplikacji: `mobile-app`.
-- Dokumentacja zadania i plan: `task-info`.
-- Glowny plan implementacji: `task-info/05-plan-implementacji-krok-po-kroku.md`.
-- Kryteria QA: `task-info/06-qa-i-akceptacja.md`.
-- Checklista wymagan: `task-info/07-checklista-wymagan.md`.
+- Notatki i material referencyjny: `task-info`.
+- Ogolne QA: `task-info/06-qa-i-akceptacja.md`.
+- Lista mozliwych wymagan: `task-info/07-checklista-wymagan.md`.
 
-## Kolejnosc czytania dokumentow
+## Zasady pracy przed zmianami
 
-Przy starcie nowej sesji czytaj:
+Przed zmiana kodu:
 
-1. `task-info/README.md` - mapa dokumentacji.
-2. `task-info/01-problematyka.md` - wymagania i ryzyka.
-3. `task-info/02-architektura-aplikacji.md` - docelowa struktura aplikacji.
-4. `task-info/03-paczki-i-software-mansion.md` - paczki i zasady instalacji.
-5. `task-info/04-agentic-engineering-plan.md` - granice pracy agentow.
-6. `task-info/05-plan-implementacji-krok-po-kroku.md` - roadmapa implementacji.
-7. `task-info/06-qa-i-akceptacja.md` - testy i akceptacja.
-8. `task-info/07-checklista-wymagan.md` - kompletna checklista wymagan.
+1. Przeczytaj ten plik.
+2. Przeczytaj `mobile-app/AGENTS.md`.
+3. Przeczytaj tylko te pliki z `task-info`, ktore dotycza wskazanego zakresu.
+4. Sprawdz aktualny stan repo i nie zakladaj, ze poprzednie etapy sa kompletne.
+5. Zmien tylko minimalny potrzebny zakres.
 
-Nie trzeba czytac PDF, jezeli `introductory task 2.0 final.txt` i pliki `.md` wystarczaja. PDF jest materialem pomocniczym.
+Przed zmiana samej dokumentacji wystarczy przeczytac pliki, ktore sa zmieniane
+albo ktore nadaja kontekst zmianie.
+
+## Preferencje implementacyjne
+
+- Rozwiazanie ma byc jak najbardziej minimalne.
+- Funkcjonalnosc jest wazniejsza niz wyglad.
+- Style dodawaj tylko wtedy, gdy sa potrzebne do dzialania, safe area,
+  czytelnosci, braku nachodzenia tekstu albo stabilnych wymiarow.
+- Nie dodawaj dekoracyjnych styli, rozbudowanych palet, cieni, animacji,
+  haptics, bottom sheetow ani placeholderow bez wyraznej prosby.
+- Nie instaluj paczek na zapas.
+- Nie dodawaj funkcji tylko dlatego, ze sa opisane w notatkach.
+- Jezeli da sie zrobic prostsza wersje bez nowej paczki, wybierz prostsza
+  wersje.
 
 ## Zasady techniczne
 
 - Projekt aplikacji jest w `mobile-app`.
-- Target: Expo SDK 57, iOS-first.
+- Target: Expo SDK 57, iOS-first, chyba ze uzytkownik poprosi inaczej.
 - Package manager: Bun.
 - Komendy uruchamiaj z `mobile-app`, chyba ze prompt mowi inaczej.
 - Paczki zgodne z Expo instaluj przez `bunx expo install`.
 - Paczki spoza Expo SDK instaluj przez `bun add`.
 - Dev dependencies instaluj przez `bun add -d`.
-- Nie instaluj paczek na zapas.
 - Nie uzywaj `axios`; PokeAPI obsluguj przez natywny `fetch`.
-- Jedynym zrodlem prawdy dla lokalnego key-value storage jest `react-native-mmkv`.
-- Nie uzywaj `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
-- Nie umieszczaj komponentow, hookow, storage, API ani typow domenowych w `app`.
+- Lokalny key-value storage, jezeli bedzie potrzebny, ma uzywac
+  `react-native-mmkv`, chyba ze uzytkownik wyraznie zmieni decyzje.
+- Nie umieszczaj komponentow wielokrotnego uzycia, hookow, storage, API ani
+  typow domenowych w `app`.
 - `app` ma zawierac route files i layouty, a logika ma byc w `src`.
-- Funkcjonalnosc jest wazniejsza niz wyglad: nie dodawaj dekoracyjnych styli, palet, cieni, animacji ani rozbudowanych placeholderow przed etapem polish.
-- Style dodawaj tylko wtedy, gdy sa potrzebne do dzialania, safe area, czytelnosci, braku nachodzenia tekstu albo stabilnych wymiarow list/map/kamery.
-- VisionCamera rob w osobnym etapie, bo wymaga native/development builda i ma wysoki koszt debugowania.
 
-## Docelowa struktura
+## Opcjonalny kierunek struktury
 
-Docelowo aplikacja powinna isc w tym kierunku:
+Ta struktura jest kierunkiem, nie obowiazkiem tworzenia wszystkiego od razu:
 
 ```text
 mobile-app/
@@ -82,254 +103,56 @@ mobile-app/
     types/
 ```
 
-Szczegoly struktury sa w `task-info/02-architektura-aplikacji.md`.
+Tworz tylko katalogi i pliki potrzebne dla aktualnie wskazanego zakresu.
 
-## Tryb pracy krok po kroku
+## Praca krok po kroku
 
-Gdy uzytkownik napisze prompt typu "zrob krok 3", "lecimy z mapa" albo "teraz favorite", agent ma:
+Gdy uzytkownik napisze np. "zrob Pokedex", "teraz favorite" albo "lecimy z
+mapa":
 
-1. Zidentyfikowac odpowiadajacy krok z planu.
-2. Przeczytac ten krok w `task-info/05-plan-implementacji-krok-po-kroku.md`.
-3. Sprawdzic aktualny stan repo i nie zakladac, ze poprzednie kroki sa kompletne.
-4. Wykonac tylko zakres danego kroku oraz niezbedne male poprawki integracyjne.
-5. Uruchomic QA opisane w sekcji `QA po kroku`.
-6. Na koniec podac:
+1. Zidentyfikuj najmniejszy zakres tej prosby.
+2. Przeczytaj powiazane notatki z `task-info`.
+3. Sprawdz aktualny kod.
+4. Zaimplementuj tylko potrzebna czesc.
+5. Uruchom adekwatne QA dla zmienionego zakresu.
+6. Na koniec krotko podaj:
    - co zmieniono,
    - jakie komendy/testy uruchomiono,
-   - co zostalo jako ryzyko albo nastepny krok.
+   - czego nie sprawdzono,
+   - jaki jest logiczny nastepny krok, jesli istnieje.
 
-Jezeli poprzedni krok nie jest gotowy, zatrzymaj sie na minimalnym brakujacym fundamencie potrzebnym do aktualnego kroku i jasno to opisz.
+## Funkcje tylko na wyrazna prosbe
 
-## Roadmapa implementacji
+Te elementy moga byc opisane w notatkach, ale nie powinny byc dodawane bez
+jasnego polecenia:
 
-### Krok 0 - przygotowanie
+- kamera i VisionCamera,
+- mapa i lokalizacja,
+- animacje Reanimated,
+- haptics,
+- bottom sheet,
+- zaawansowany polish UI,
+- zapisywanie zdjec,
+- dodatkowe pakiety natywne.
 
-Cel: potwierdzic baseline repo.
+## QA
 
-- Wejdz do `mobile-app`.
-- Sprawdz `package.json`, `app.json`, `tsconfig.json`, `AGENTS.md`.
-- Potwierdz Bun.
-- Uruchom `bun --version`.
-- Uruchom `bunx tsc --noEmit`.
-- Zapisz, czy baseline przechodzi przed zmianami.
+Po kazdej zmianie uruchom QA proporcjonalne do zakresu:
 
-### Krok 1 - Expo Router i tooling
+- dla zmian TypeScript: zwykle `bunx tsc --noEmit`,
+- dla zmian lintowanych: `bunx expo lint`, jesli projekt ma lint,
+- dla zmian formatowania: `bunx prettier . --check`, jesli jest istotne,
+- dla UI: reczny test tylko zmienionego ekranu lub przeplywu.
 
-Cel: zamienic starter na Expo Router.
-
-- Dodaj Expo Router i wymagane paczki nawigacji.
-- Ustaw entrypoint Expo Router.
-- Dodaj `app/_layout.tsx` i `app/+not-found.tsx`.
-- Dodaj ESLint i Prettier.
-- Sprawdz konfiguracje Reanimated/Babel.
-- QA: TypeScript, lint, pierwszy ekran routera.
-
-### Krok 2 - taby i puste ekrany
-
-Cel: cztery taby bez logiki biznesowej.
-
-- Dodaj tabs layout.
-- Dodaj taby: Favorites, Pokedex, Camera, Map.
-- Kazdy tab ma wlasny stack i placeholder.
-- QA: kazdy tab renderuje placeholder, header i safe area.
-
-### Krok 3 - theme i komponenty bazowe
-
-Cel: wspolne UI state i wyglad.
-
-- Dodaj `src/theme/colors.ts`.
-- Dodaj `EmptyState`, `ErrorState`, `LoadingState`.
-- Dodaj `PokemonCard` i `PokemonListRow`.
-- Uzyj `expo-image` dla obrazkow.
-- QA: komponenty renderuja sie bez crasha i bez nachodzenia tekstu.
-
-### Krok 4 - typy domenowe
-
-Cel: jedno zrodlo prawdy dla danych.
-
-- Dodaj `src/types/pokemon.ts`.
-- Dodaj `src/types/map.ts`.
-- Zdefiniuj `PokemonListItem`, `PokemonDetails`, `FavoritePokemonIds`, `MapPin`.
-- QA: typy sa w jednym miejscu i TypeScript przechodzi.
-
-### Krok 5 - PokeAPI i React Query
-
-Cel: cache'owalne pobieranie danych.
-
-- Dodaj `@tanstack/react-query`.
-- Dodaj `QueryClientProvider`.
-- Dodaj `src/api/pokeapi.ts`.
-- Dodaj `fetchPokemonPage` i `fetchPokemonDetails`.
-- Dodaj hooki `usePokemonList` i `usePokemonDetails`.
-- Mapuj PokeAPI payload na typy domenowe.
-- QA: success, non-OK response, TypeScript, brak `axios`.
-
-### Krok 6 - Pokedex tab
-
-Cel: lista Pokemonow z paginacja.
-
-- W Pokedex dodaj `FlatList`.
-- Obsluz initial loading, pull-to-refresh, footer loading, error i empty state.
-- Infinite scroll ma pobierac kolejne strony.
-- Klikniecie row otwiera `/pokemon/[name]`.
-- QA: loading, scroll, refresh bez duplikatow, poprawny route.
-
-### Krok 7 - Pokemon detail
-
-Cel: wspoldzielony ekran szczegolow.
-
-- Dodaj `app/pokemon/[name].tsx`.
-- Dodaj komponent `PokemonDetail`.
-- Pokaz nazwe, obrazek, typy, height, weight, abilities i stats.
-- Dodaj akcje `Set favorite`, nawet jesli storage bedzie podpiety w kolejnym kroku.
-- QA: route dziala, back wraca do Pokedex, error state dziala.
-
-### Krok 8 - favorites storage i Favorites tab
-
-Cel: lokalne favorites Pokemonow zapisane jako tablica ID.
-
-- Dodaj `react-native-mmkv` i `react-native-nitro-modules` przez `bunx expo install`.
-- Uwzglednij `bunx expo prebuild`, bo MMKV jest natywnym modulem JSI/Nitro.
-- Dodaj storage przez MMKV, ktore jest jedynym zrodlem prawdy dla lokalnych danych key-value.
-- Dodaj `favorite-storage.ts`.
-- Dodaj `useFavoritePokemon`.
-- Podepnij `Set favorite`.
-- Zbuduj Favorites tab z empty state, lista/card/detail i akcja usuniecia pojedynczego Pokemona z favorites.
-- QA: dodanie wielu favorites, brak duplikatow ID, usuniecie favorite, restart aplikacji zachowuje stan.
-
-### Krok 9 - Map tab
-
-Cel: mapa, pinezki i opis Pokemona.
-
-- Dodaj `react-native-maps` i `expo-location`.
-- Dodaj `map-pin-storage.ts`.
-- Dodaj `useMapPins`.
-- Dodaj `MapView`.
-- Long press dodaje pinezke z aktualnym favorite albo fallbackiem.
-- Marker press pokazuje modal/formSheet/bottom sheet z opisem.
-- QA: mapa renderuje sie poprawnie, piny zostaja po restarcie.
-
-### Krok 10 - Camera tab baseline
-
-Cel: kamera bez pelnego face overlay.
-
-- Dodaj VisionCamera dependencies i `expo-media-library`.
-- Dodaj permissions w `app.json`.
-- Zbuduj development build, jezeli wymagane.
-- Dodaj permission flow, no permission state, no favorite state, preview i capture button.
-- QA: brak permission nie crashuje, preview dziala w development buildzie.
-
-### Krok 11 - Camera face overlay
-
-Cel: overlay ulubionego Pokemona na wykrytej twarzy.
-
-- Dodaj worklets i face detector.
-- Dodaj wymagany Babel/native config.
-- Podlacz face detector.
-- Oblicz pozycje overlay na podstawie twarzy.
-- Dodaj fallback dla braku twarzy.
-- QA: kamera dziala bez twarzy, overlay pojawia sie po wykryciu twarzy, ograniczenia symulatora sa opisane.
-
-### Krok 12 - Camera save photo i lokalizacja
-
-Cel: bonusy.
-
-- Zapisz zdjecie do galerii przez `expo-media-library`.
-- Opcjonalnie pobierz lokalizacje przez `expo-location`.
-- Po zapisie zdjecia dodaj `MapPin` ze `source: "camera"`.
-- QA: odmowa galerii/lokalizacji nie crashuje, zgody daja oczekiwany efekt.
-
-### Krok 13 - polish
-
-Cel: dopracowanie UX.
-
-- Dodaj haptics dla favorite, unfavorite, map long press i capture.
-- Dodaj Reanimated dla wejsc listy, empty transitions, modal/sheet polish.
-- Dodaj accessibility labels i czytelne komunikaty bledow.
-- QA: animacje nie psuja wydajnosci, gesty nie konfliktuja z nawigacja, tekst nie nachodzi.
-
-### Krok 14 - QA i finalizacja
-
-Cel: potwierdzic end-to-end.
-
-- Uruchom `bunx tsc --noEmit`.
-- Uruchom `bunx expo lint`.
-- Uruchom `bunx prettier . --check`.
-- Przejdz manual QA z `task-info/06-qa-i-akceptacja.md`.
-- Jezeli aplikacja jest uruchamialna, uzyj Argent/UI QA do screenshotow i glownych przeplywow.
-- Zapisz znane ograniczenia, zwlaszcza VisionCamera i test fizycznego urzadzenia.
-
-## Granice implementacji
-
-### `app`
-
-Tylko:
-
-- route files,
-- layouty,
-- minimalne skladanie hookow i komponentow.
-- minimalne style potrzebne do poprawnego renderu route.
-
-Nie dodawaj tam:
-
-- fetchowania API,
-- storage,
-- parsowania PokeAPI,
-- komponentow wielokrotnego uzycia,
-- typow domenowych.
-- dekoracyjnych styli i polishu.
-
-### `src/api`
-
-Tylko komunikacja z PokeAPI i mapowanie payloadow na typy domenowe.
-
-### `src/storage`
-
-Tylko local storage dla favorite i map pins. JSON parse musi miec fallback i nie moze crashowac UI.
-
-### `src/hooks`
-
-Granica integracji dla UI:
-
-- `usePokemonList`.
-- `usePokemonDetails(name)`.
-- `useFavoritePokemon`.
-- `useMapPins`.
-
-### `src/components`
-
-Komponenty prezentacyjne bez bezposredniego dostepu do storage/API.
-Komponenty maja miec minimalny layout. Jezeli komponent potrzebuje wiecej niz kilku niezbednych styli, wydziel je do pliku `*.styles.ts` obok komponentu.
-
-### `src/theme`
-
-Tylko male, wspolne stale UI potrzebne do funkcjonalnych komponentow. Nie buduj rozbudowanej palety ani design systemu przed etapem polish.
-
-## QA po kazdym kroku
-
-Po kazdym kroku minimum:
-
-1. Uruchom QA opisane w danym kroku planu.
-2. Uruchom `bunx tsc --noEmit`, chyba ze krok jest czysto dokumentacyjny albo znany baseline juz nie przechodzi.
-3. Sprawdz `git status --short`.
-4. Nie zostawiaj niewyjasnionych crashy, pustych bialych ekranow ani niedokonczonych integracji.
-
-Finalne QA jest w `task-info/06-qa-i-akceptacja.md`.
+Nie uruchamiaj kosztownych ani natywnych testow, jezeli zmiana ich nie dotyczy
+albo uzytkownik o nie nie poprosil.
 
 ## Raport koncowy agenta
 
-Na koniec pracy odpowiedz krotko:
+Odpowiedz krotko:
 
-- jaki krok zostal zrobiony,
+- jaki zakres zostal zrobiony,
 - jakie pliki zmieniono,
 - jakie komendy uruchomiono i z jakim wynikiem,
 - czego nie udalo sie sprawdzic,
-- jaki jest logiczny nastepny krok z roadmapy.
-
-## Ryzyka stale
-
-- Tekst zadania wspomina "3 tabs", ale plan przyjmuje cztery widoki: Favorites, Pokedex, Camera, Map.
-- Camera/VisionCamera moze wymagac fizycznego urzadzenia albo development builda.
-- Face detection moze nie dzialac w pelni na symulatorze.
-- Storage ma uzywac wylacznie `react-native-mmkv` jako local key-value storage. Nie uzywaj `@react-native-async-storage/async-storage`, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani alternatywnego storage.
-- Niektore paczki native moga wymagac rebuilda aplikacji.
+- co jest najrozsadniejszym nastepnym krokiem.

@@ -1,283 +1,91 @@
 # Agentic engineering plan
 
-## Cel tego dokumentu
+Ten dokument opisuje prosty sposob pracy agenta w tym repo. Celem jest
+minimalny, kontrolowany development wedlug tego, co uzytkownik aktualnie daje do
+zrobienia.
 
-Ten plik opisuje, jak prowadzic implementacje z uzyciem agentow lub kolejnych sesji Codex tak, zeby kazdy etap mial jasny kontrakt, wejscia, wyjscia i kryteria zakonczenia.
+## Zasada pracy
 
-Najwazniejsza zasada: agenci moga pracowac rownolegle tylko wtedy, gdy ich granice sa jasne. W przeciwnym razie lepiej isc sekwencyjnie i czesto integrowac.
+Agent nie realizuje calego planu z `task-info` automatycznie. Agent robi tylko
+wskazany zakres.
 
-## Globalne zasady pracy
+## Protokol agenta
 
-- Zawsze czytac `mobile-app/AGENTS.md` przed pisaniem kodu.
-- Trzymac sie Expo SDK 57.
-- Nie umieszczac komponentow, hookow ani utils w katalogu `app`.
-- Najpierw dowozic dzialajace MVP, potem bonusy.
-- Kazdy agent powinien zostawic krotka notatke: co zmienil, co przetestowal, jakie ryzyka zostaly.
-- Nie instalowac paczek "na zapas"; kazda paczka musi miec konkretne miejsce uzycia.
-- Camera/VisionCamera robic w osobnym etapie, bo zmienia native build i ma wysoki koszt debugowania.
+1. Przeczytaj root `AGENTS.md`.
+2. Przeczytaj `mobile-app/AGENTS.md`, jezeli bedziesz zmieniac kod aplikacji.
+3. Ustal, jaka konkretna czesc jest wskazana w prompcie.
+4. Przeczytaj tylko powiazane notatki z `task-info`.
+5. Sprawdz aktualny stan repo.
+6. Zaimplementuj najmniejszy dzialajacy zakres.
+7. Uruchom QA adekwatne do zmiany.
+8. Raportuj krotko wynik, testy i ryzyka.
 
-## Proponowany podzial agentow
+## Minimalny zakres
 
-### 1. Requirements agent
+Minimalny zakres oznacza:
 
-Misja:
+- bez bonusow,
+- bez funkcji z przyszlych etapow,
+- bez instalowania paczek na zapas,
+- bez dekoracyjnych styli,
+- bez rozbudowanych abstrakcji, jezeli prosty kod jest wystarczajacy,
+- bez refaktorow niezwiazanych z prosba.
 
-- Zamienic `introductory task 2.0 final.txt` na checklisty wymagan.
-- Wylapac niespojnosci, np. "3 tabs" kontra cztery wymienione widoki.
-- Oznaczyc MVP, bonusy i ryzyka.
+## Kiedy pytac uzytkownika
 
-Wejscia:
+Pytaj tylko wtedy, gdy:
 
-- `task-info/introductory task 2.0 final.txt`.
-- `task-info/01-problematyka.md`.
+- prompt nie wskazuje, ktora czesc ma byc robiona,
+- sa dwa realne warianty o istotnie innym koszcie,
+- wykonanie najmniejszego zakresu mogloby byc sprzeczne z intencja uzytkownika,
+- potrzebna jest decyzja o paczce natywnej, rebuildzie albo funkcji wysokiego
+  ryzyka.
 
-Wyjscia:
+Nie pytaj o rzeczy, ktore da sie ustalic przez przeczytanie repo.
 
-- checklisty acceptance criteria,
-- lista decyzji produktowych,
-- lista otwartych pytan, jesli beda.
+## Granice rownoleglenia
 
-Done:
+Domyslnie nie ma potrzeby dzielic pracy na wielu agentow. Jezeli praca jest
+wieksza, lepiej podzielic ja na male, kolejne promptowane czesci.
 
-- Kazde wymaganie z pdftotext jest odwzorowane albo jawnie odrzucone z powodem.
+Bez wyraznej prosby nie uruchamiaj rownolegle osobnych watkow dla:
 
-### 2. Architecture agent
+- kamery,
+- mapy,
+- storage,
+- UI polish,
+- QA end-to-end.
 
-Misja:
+## Kontrakty w kodzie
 
-- Utworzyc strukture Expo Router.
-- Ustalic granice `app` kontra `src`.
-- Zdefiniowac typy domenowe.
+Jezeli zakres wymaga wspoldzielenia danych, uzyj prostych typow i hookow jako
+kontraktu. Nie tworz rozbudowanego systemu tylko dlatego, ze moze przydac sie
+pozniej.
 
-Wejscia:
+Preferencje:
 
-- `02-architektura-aplikacji.md`.
-- `03-paczki-i-software-mansion.md`.
+- API w `src/api`,
+- storage w `src/storage`,
+- hooki w `src/hooks`,
+- komponenty prezentacyjne w `src/components`,
+- route files i layouty w `app`.
 
-Wyjscia:
+## QA po pracy
 
-- route structure,
-- typy `PokemonListItem`, `PokemonDetails`, `FavoritePokemonIds`, `MapPin`,
-- podstawowe providers.
+QA ma byc proporcjonalne do zmiany:
 
-Done:
+- zmiany TypeScript: `bunx tsc --noEmit`,
+- zmiany lintowane: `bunx expo lint`, jezeli jest skonfigurowany,
+- zmiany Markdown: zwykle wystarczy diff i `git status --short`,
+- zmiany UI: reczne sprawdzenie dotknietego ekranu,
+- zmiany natywne: opisac, czy wymagaja rebuilda i czego nie sprawdzono.
 
-- App ma route `/` i cztery taby.
-- TypeScript przechodzi dla szkieletu.
-- Nie ma logiki domenowej w katalogu `app`.
+## Raport koncowy
 
-### 3. Data agent
+Raport ma byc krotki:
 
-Misja:
-
-- Zaimplementowac PokeAPI.
-- Dodac React Query.
-- Obsluzyc infinite scroll i detail fetch.
-
-Wejscia:
-
-- typy domenowe,
-- `src/api` skeleton,
-- PokeAPI docs.
-
-Wyjscia:
-
-- `fetchPokemonPage`,
-- `fetchPokemonDetails`,
-- hook `usePokemonList`,
-- hook `usePokemonDetails`.
-
-Done:
-
-- Lista pobiera pierwsza strone.
-- `fetchNextPage` pobiera kolejne strony.
-- Error i retry sa wystawione do UI.
-- Nie ma `axios`.
-
-### 4. Storage agent
-
-Misja:
-
-- Zaimplementowac lokalny storage dla favorites i map pins.
-- Uzyc wylacznie `react-native-mmkv`.
-- Traktowac MMKV jako jedyne zrodlo prawdy dla lokalnych danych key-value; bez AsyncStorage, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` i recznych tabel SQLite dla favorite/map pins.
-
-Wejscia:
-
-- typy domenowe,
-- decyzja storage z dokumentacji.
-
-Wyjscia:
-
-- `storage.ts`,
-- `favorite-storage.ts`,
-- `map-pin-storage.ts`,
-- `useFavoritePokemon`,
-- `useMapPins`.
-
-Done:
-
-- Favorites utrzymuja sie po restarcie aplikacji.
-- Favorites sa zapisane wylacznie jako tablica ID Pokemonow bez duplikatow.
-- Map pins utrzymuja sie po restarcie aplikacji.
-- JSON parse ma fallback i nie crashuje UI przy uszkodzonych danych.
-
-### 5. UI agent
-
-Misja:
-
-- Zbudowac Favorites, Pokedex i Pokemon Detail.
-- Dodac loading, empty i error states.
-- Dodac podstawowy polish przez Reanimated/Haptics tam, gdzie ma sens.
-
-Wejscia:
-
-- route structure,
-- hooki data/storage.
-
-Wyjscia:
-
-- cztery podstawowe route views z dzialajacym UI,
-- komponenty prezentacyjne,
-- header action do unfavorite.
-
-Done:
-
-- Uzytkownik moze przejsc z listy do szczegolow.
-- Uzytkownik moze ustawic i usunac favorite.
-- Empty state favorite jest widoczny, gdy nie ma favorite.
-
-### 6. Map agent
-
-Misja:
-
-- Zbudowac Map tab.
-- Dodac long press -> pin.
-- Dodac marker press -> modal/formSheet.
-
-Wejscia:
-
-- `useMapPins`,
-- favorite Pokemon,
-- map package setup.
-
-Wyjscia:
-
-- mapa,
-- dodawanie pinezek,
-- opis pinezki z Pokemonem.
-
-Done:
-
-- Long press dodaje pinezke.
-- Klik marker pokazuje opis.
-- Piny zostaja po restarcie.
-
-### 7. Native camera agent
-
-Misja:
-
-- Zaimplementowac VisionCamera flow.
-- Dodac permissions.
-- Dodac face detection i overlay ulubionego Pokemona.
-- Dodac zapis zdjecia i opcjonalnie lokalizacje.
-
-Wejscia:
-
-- favorite Pokemon,
-- paczki VisionCamera,
-- iOS development build.
-
-Wyjscia:
-
-- Camera tab,
-- fallback states,
-- overlay,
-- zapis zdjecia do galerii.
-
-Done:
-
-- Brak permission nie crashuje.
-- Brak favorite pokazuje jasny empty state.
-- Kamera dziala w development buildzie.
-- Overlay jest przetestowany na realnym urzadzeniu albo ryzyko symulatora jest zapisane.
-
-### 8. QA agent
-
-Misja:
-
-- Zweryfikowac appke i dokumentacje.
-- Uruchomic statyczne testy.
-- Przejsc manualne scenariusze.
-- Uzyc Argent do UI QA, jezeli aplikacja jest uruchamialna.
-
-Wejscia:
-
-- cala implementacja,
-- `06-qa-i-akceptacja.md`.
-
-Wyjscia:
-
-- raport testow,
-- lista bledow,
-- informacja, czego nie udalo sie przetestowac.
-
-Done:
-
-- `bunx tsc --noEmit` przechodzi albo ma udokumentowane znane bledy.
-- `bunx expo lint` przechodzi albo ma udokumentowane znane bledy.
-- Manual QA obejmuje cztery taby.
-
-## Kontrakty miedzy agentami
-
-### Typy sa kontraktem
-
-Zamiast przekazywac luzne obiekty, agenci powinni uzgadniac typy:
-
-- `PokemonDetails` dla szczegolow pobieranych z API.
-- `FavoritePokemonIds` dla lokalnego storage favorites.
-- `MapPin` dla mapy i kamery.
-- `ApiError` albo prosty error model dla UI.
-
-### Hooki sa granica integracji
-
-UI nie powinno wiedziec, jak dziala storage lub API. UI korzysta z hookow:
-
-- `usePokemonList`.
-- `usePokemonDetails(name)`.
-- `useFavoritePokemon`.
-- `useMapPins`.
-
-### Ekrany nie sa miejscem na logike infrastruktury
-
-Route files w `app` powinny skladac UI z hookow i komponentow. Fetch, storage, parsowanie i mapowanie danych musza byc poza `app`.
-
-## Kolejnosc rownoleglenia
-
-Bezpiecznie rownolegle:
-
-- Requirements agent i Architecture agent moga pracowac po ustaleniu MVP.
-- UI agent moze tworzyc komponenty placeholder, gdy Data agent konczy hooki.
-- QA agent moze przygotowac scenariusze zanim implementacja bedzie gotowa.
-
-Niebezpiecznie rownolegle:
-
-- Storage agent i UI agent bez ustalonego kontraktu `FavoritePokemonIds`.
-- Camera agent rownolegle z dependency setupem, bo native build moze zmienic konfiguracje.
-- Kilku agentow jednoczesnie zmieniajacych `app/_layout.tsx` albo `package.json`.
-
-## Zasady commitowania
-
-Najlepszy podzial commitow:
-
-1. Docs i plan.
-2. Tooling + Router setup.
-3. API + React Query.
-4. Favorite storage + UI.
-5. Pokedex + detail.
-6. Map.
-7. Camera dependencies + native config.
-8. Camera implementation.
-9. QA fixes.
-
-Kazdy commit powinien byc budowalny albo miec jasny opis, dlaczego jest etapem przejsciowym.
+- zrobiony zakres,
+- zmienione pliki,
+- uruchomione komendy i wynik,
+- rzeczy niesprawdzone,
+- nastepny logiczny krok, jezeli istnieje.

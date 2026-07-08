@@ -1,347 +1,178 @@
 # Paczki i Software Mansion stack
 
+Ten plik jest lista referencyjna. Paczki instalujemy tylko wtedy, gdy aktualnie
+wdrazana funkcja ich wymaga. Nie instalujemy paczek na zapas.
+
 ## Zasady instalacji
 
-Projekt jest na Expo SDK 57, a domyslnym package managerem jest Bun. Paczki zarzadzane przez Expo instalujemy przez:
+Projekt jest na Expo SDK 57, a domyslnym package managerem jest Bun.
+
+Paczki zarzadzane przez Expo:
 
 ```bash
 bunx expo install <package-name>
 ```
 
-Paczki spoza Expo SDK instalujemy przez:
+Paczki spoza Expo SDK:
 
 ```bash
 bun add <package-name>
 ```
 
-Dev dependencies instalujemy przez:
+Dev dependencies:
 
 ```bash
 bun add -d <package-name>
 ```
 
-Nie nalezy recznie zgadywac wersji paczek Expo, jesli `expo install` moze dobrac wersje kompatybilna z SDK 57.
+Nie zgaduj recznie wersji paczek Expo, jezeli `expo install` moze dobrac wersje
+kompatybilna z SDK 57.
 
-## Nawigacja i UI
+## Zasada minimalizmu
+
+- Najpierw sprawdz, czy dana funkcja da sie zrobic bez nowej paczki.
+- Instaluj tylko paczki, ktore sa uzywane w aktualnym zakresie.
+- Jezeli paczka wymaga native rebuilda, traktuj ja jako osobny koszt i nie
+  dodawaj jej bez jasnej potrzeby.
+- Animacje, haptics, bottom sheet, kamera i mapa sa tylko na wyrazna prosbe.
+
+## Nawigacja
 
 ### `expo-router`
 
-Po co:
+Uzyc, gdy aktualny zakres wymaga routingu, tabow albo ekranow szczegolow.
 
-- file-based routing,
-- tab navigator,
-- stacki wewnatrz tabow,
-- route params dla `pokemon/[name]`.
-
-Gdzie:
+Typowe miejsce:
 
 - `app/_layout.tsx`,
 - `app/(tabs)/_layout.tsx`,
-- wszystkie route files.
-
-### `react-native-screens` - Software Mansion
-
-Po co:
-
-- natywne prymitywy ekranow,
-- wydajniejsze stack navigation,
-- fundament Expo Router / React Navigation.
-
-Gdzie:
-
-- posrednio przez Expo Router,
-- bezposrednio tylko wtedy, gdy trzeba uzyc eksperymentalnych SafeArea primitives.
-
-Uwagi:
-
-- To paczka Software Mansion.
-- Jest kluczowa dla natywnego feelu nawigacji.
-
-### `react-native-safe-area-context`
-
-Po co:
-
-- poprawna obsluga safe area,
-- przyciski kamery i mapa nie powinny wchodzic pod notch/home indicator.
-
-W repo juz jest zainstalowana.
-
-### `expo-image`
-
-Po co:
-
-- lepsze cache i loading obrazkow niz standardowy `Image`,
-- lazy loading zdjec Pokemonow na liscie,
-- stabilniejsze renderowanie obrazkow z PokeAPI.
-
-Gdzie:
-
-- `PokemonListRow`,
-- `PokemonCard`,
-- `PokemonDetail`,
-- overlay kamery.
-
-## Dane i stan
-
-### `@tanstack/react-query`
-
-Po co:
-
-- cache danych PokeAPI,
-- infinite queries,
-- retry,
-- refetch,
-- separation of server state from local UI state.
-
-Gdzie:
-
-- `app/_layout.tsx` jako `QueryClientProvider`,
-- `src/hooks/use-pokemon-list.ts`,
-- `src/hooks/use-pokemon-details.ts`.
-
-### Native `fetch`
-
-Po co:
-
-- proste requesty do PokeAPI,
-- brak dodatkowej warstwy `axios`,
-- zgodnosc z preferencja Expo data-fetching guidance.
-
-Gdzie:
-
-- `src/api/pokeapi.ts`.
-
-### `react-native-mmkv`
-
-Po co:
-
-- jedyne zrodlo prawdy dla lokalnego key-value storage,
-- lokalny zapis tablicy ID ulubionych Pokemonow i pinezek,
-- szybkie synchroniczne API oparte o natywny modul JSI/Nitro.
-
-Gdzie:
-
-- `src/storage/storage.ts`.
-
-Instalacja:
-
-```bash
-bunx expo install react-native-mmkv react-native-nitro-modules
-bunx expo prebuild
-```
-
-Decyzja:
-
-- Uzywamy wylacznie `react-native-mmkv` jako aplikacyjnej abstrakcji storage.
-- Nie uzywamy `@react-native-async-storage/async-storage`, mimo ze PDF wymienia AsyncStorage.
-- Nie uzywamy `expo-sqlite/kv-store` ani `expo-sqlite/localStorage/install`.
-- Nie tworzymy recznych tabel SQLite dla favorite/map pins; dane ida przez key-value API z MMKV.
-
-## Software Mansion stack
-
-`swm` w tej dokumentacji oznacza paczki firmy Software Mansion.
-
-### `react-native-reanimated`
-
-Po co:
-
-- plynne animacje UI,
-- animacje wejscia i wyjscia,
-- animacje bottom sheet,
-- mikrointerakcje przy favorite, refresh, empty states,
-- praca na UI thread przez worklety.
-
-Gdzie:
-
-- `PokemonCard` i `PokemonListRow` dla wejsc/press feedback,
-- map pin modal/bottom sheet,
-- camera overlay,
-- przyszly custom bottom sheet.
-
-Uwagi:
-
-- Wymaga poprawnego Babel pluginu.
-- Nie nalezy mieszac Reanimated z przypadkowymi raw `Animated` API bez powodu.
-
-### `react-native-gesture-handler`
-
-Po co:
-
-- natywne gesty,
-- bottom sheet,
-- press/long press/pan gestures,
-- plynna integracja z Reanimated.
-
-Gdzie:
-
-- root entrypoint,
-- custom bottom sheet,
-- ewentualne swipe actions na listach,
-- gesty w kamerze, np. pinch zoom.
-
-Uwagi:
-
-- Long press na mapie zapewnia `react-native-maps`, ale Gesture Handler przyda sie przy wlasnych interakcjach poza mapa.
+- route files.
 
 ### `react-native-screens`
 
-Po co:
+Zwykle przychodzi z nawigacja i Expo Router. Nie dodawac osobnych zastosowan bez
+potrzeby.
 
-- natywna nawigacja,
-- lepsza pamiec i performance,
-- poprawne stack transitions.
+### `react-native-safe-area-context`
 
-Gdzie:
+Uzyc, gdy ekran wymaga poprawnego safe area albo elementy wchodza pod notch,
+header, tab bar lub home indicator.
 
-- przez Expo Router i stack layouts.
+## Dane
+
+### Native `fetch`
+
+Domyslny wybor dla PokeAPI. Nie uzywamy `axios`.
+
+### `@tanstack/react-query`
+
+Dodac tylko wtedy, gdy aktualny zakres realnie korzysta z cache, retry,
+odswiezania, paginacji albo wspoldzielenia danych miedzy ekranami.
+
+Dla bardzo prostego jednorazowego pobrania danych mozna zaczac prosciej, o ile
+nie komplikuje to kolejnego kroku.
+
+## Obrazki
+
+### `expo-image`
+
+Uzyc, gdy ekran faktycznie pokazuje obrazki Pokemonow i potrzebne jest lepsze
+ladowanie/cache niz standardowy `Image`.
+
+Nie dodawac tylko dlatego, ze moze przydac sie pozniej.
+
+## Storage
+
+### `react-native-mmkv`
+
+Preferowany local key-value storage, jezeli funkcja wymaga trwalego zapisu.
+
+Mozliwe uzycia:
+
+- favorite Pokemon IDs,
+- map pins.
+
+Nie dodawac storage, jezeli aktualny zakres nie zapisuje danych lokalnie.
+
+Nie uzywac:
+
+- `@react-native-async-storage/async-storage`,
+- `expo-sqlite/kv-store`,
+- `expo-sqlite/localStorage/install`,
+- recznych tabel SQLite dla prostych key-value danych favorite/map pins.
+
+## Software Mansion stack
+
+`swm` oznacza paczki Software Mansion. Sa przydatne, ale nie sa obowiazkowe w
+kazdym etapie.
+
+### `react-native-reanimated`
+
+Tylko na wyrazna prosbe albo gdy funkcja bez animacji nie spelni wymagania.
+
+Nie dodawac dla dekoracyjnych wejsc listy, mikrointerakcji albo polishu, jezeli
+uzytkownik o to nie prosi.
+
+### `react-native-gesture-handler`
+
+Uzyc, gdy potrzebne sa zaawansowane gesty, bottom sheet albo integracja wymagana
+przez nawigacje.
+
+Nie dodawac osobnych gestow bez potrzeby.
 
 ### `react-native-worklets`
 
-Po co:
-
-- runtime workletow,
-- praca poza glownym JS thread,
-- wymagane przy zaawansowanym frame processing i czesci integracji VisionCamera.
-
-Gdzie:
-
-- etap Camera,
-- VisionCamera frame output,
-- face detection pipeline.
-
-Uwagi:
-
-- To czesc najwiekszego ryzyka technicznego.
-- Dodac dopiero przy etapie kamery, z osobnym commitem i testem native build.
+Traktowac jako paczke dla zaawansowanej kamery/frame processing. Nie dodawac
+przed etapem kamery.
 
 ## Mapy i lokalizacja
 
 ### `react-native-maps`
 
-Po co:
-
-- mapa,
-- pin markers,
-- long press add pin,
-- click marker -> modal/sheet.
-
-Gdzie:
-
-- `app/(tabs)/(map)/index.tsx`,
-- komponent `MapPinSheet`.
-
-Uwagi:
-
-- Na iOS mozna startowac od Apple Maps.
-- Google Maps provider i produkcyjny build wymagaja konfiguracji API key.
+Dodac tylko wtedy, gdy uzytkownik poprosi o Map tab albo konkretna funkcje mapy.
 
 ### `expo-location`
 
-Po co:
+Dodac tylko wtedy, gdy aktualny zakres wymaga lokalizacji.
 
-- opcjonalny zapis lokalizacji zdjecia,
-- opcjonalne centrowanie mapy na obecnej pozycji.
-
-Gdzie:
-
-- camera flow,
-- map tab.
+Nie dodawac lokalizacji jako bonusu do mapy lub kamery bez prosby.
 
 ## Kamera i media
 
 ### `react-native-vision-camera`
 
-Po co:
-
-- wymaganie zadania,
-- kamera natywna,
-- capture photo,
-- frame processing.
-
-Gdzie:
-
-- `app/(tabs)/(camera)/index.tsx`,
-- `src/components/camera/*` jesli etap kamery urosnie.
+Dodac tylko wtedy, gdy uzytkownik wyraznie poprosi o kamere.
 
 Uwagi:
 
-- Wymaga development builda.
-- Nie zakladac, ze zadziala w Expo Go.
+- moze wymagac development builda,
+- moze nie dzialac w Expo Go,
+- powinna byc robiona jako osobny, maly etap.
 
-### `react-native-nitro-modules` i `react-native-nitro-image`
+### Face detection i frame processing
 
-Po co:
-
-- zaleznosci VisionCamera w nowszych wersjach,
-- natywne typy i obsluga obrazow.
-
-Gdzie:
-
-- dependency layer, niekoniecznie bezposrednio w kodzie aplikacji.
-
-### `react-native-vision-camera-worklets`
-
-Po co:
-
-- frame output / frame processing w VisionCamera.
-
-Gdzie:
-
-- camera overlay i face detection.
-
-### `react-native-vision-camera-face-detector`
-
-Po co:
-
-- wykrywanie twarzy przez MLKit,
-- potrzebne do nalozenia Pokemona na czolo.
-
-Gdzie:
-
-- camera screen.
-
-Uwagi:
-
-- Moze wymagac testu na fizycznym iOS device, jesli symulator ma problemy z MLKit.
+Paczki typu `react-native-worklets`,
+`react-native-vision-camera-worklets` albo face detector dodawac dopiero, gdy
+uzytkownik poprosi o overlay/face detection.
 
 ### `expo-media-library`
 
-Po co:
-
-- zapis wygenerowanych zdjec do galerii.
-
-Gdzie:
-
-- camera capture flow.
+Dodac tylko wtedy, gdy aktualny zakres zapisuje zdjecia do galerii.
 
 ## Tooling
 
 ### ESLint
 
-Po co:
-
-- wymaganie zadania,
-- kontrola importow i typowych bledow.
-
-Preferencja:
-
-- `eslint-config-expo`.
+Dodac lub uruchamiac, gdy projekt ma lint jako czesc aktualnego zakresu.
 
 ### Prettier
 
-Po co:
-
-- wymaganie zadania,
-- stabilny format kodu i Markdown.
+Uzywac do kontroli formatowania, ale nie uruchamiac formattera zapisujacego pliki
+przy okazji niezaleznej zmiany bez potrzeby.
 
 ### TypeScript
 
-Po co:
-
-- projekt ma `strict: true`,
-- kontrakty miedzy agentami powinny byc wyrazone typami.
-
-Komenda QA:
+Podstawowa komenda QA dla zmian w kodzie:
 
 ```bash
 bunx tsc --noEmit
@@ -357,4 +188,3 @@ bunx tsc --noEmit
 - Screens: https://docs.swmansion.com/react-native-screens/
 - Worklets: https://docs.swmansion.com/react-native-worklets/
 - VisionCamera: https://visioncamera.margelo.com/docs
-- VisionCamera face detector: https://github.com/luicfrr/react-native-vision-camera-face-detector

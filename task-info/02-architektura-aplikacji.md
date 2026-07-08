@@ -1,24 +1,35 @@
 # Architektura aplikacji
 
-## Aktualny stan repo
+Ten plik opisuje preferowany kierunek struktury. To nie jest nakaz tworzenia
+wszystkich katalogow, ekranow i typow od razu.
+
+## Aktualne zasady
+
+- `app` ma zawierac route files i layouty.
+- Logika domenowa, komponenty wielokrotnego uzycia, hooki, API, storage i typy
+  powinny byc w `src`.
+- Tworz tylko pliki potrzebne dla aktualnie wskazanego zakresu.
+- Jezeli prosty ekran moze dzialac bez nowej abstrakcji, nie dodawaj jej na
+  zapas.
+- Style ogranicz do minimum potrzebnego do czytelnosci, safe area i stabilnego
+  layoutu.
+
+## Stan repo
 
 Projekt aplikacji znajduje sie w `mobile-app`.
 
-Stan poczatkowy:
+Wazne zalozenia:
 
 - Expo SDK 57.
-- React Native 0.86.
-- React 19.2.3.
-- TypeScript strict.
-- `App.tsx` jest jeszcze starterowym ekranem Expo.
-- Jest katalog `ios`, wiec plan jest iOS-first.
-- `AGENTS.md` wymaga korzystania z dokumentacji Expo dla wersji 57 przed pisaniem kodu.
+- iOS-first, chyba ze uzytkownik poprosi inaczej.
+- Bun jako package manager.
+- `mobile-app/AGENTS.md` przypomina, zeby przed pisaniem kodu sprawdzac
+  wersjonowana dokumentacje Expo 57.
 
-## Docelowy model nawigacji
+## Kierunek struktury
 
-Nawigacje budujemy przez Expo Router. `app` zawiera tylko route files i `_layout.tsx`; komponenty, hooki, typy i helpery trzymamy poza `app`.
-
-Proponowana struktura:
+Struktura ponizej jest kierunkiem dla sytuacji, gdy kolejne czesci beda
+faktycznie implementowane:
 
 ```text
 mobile-app/
@@ -28,141 +39,83 @@ mobile-app/
     (tabs)/
       _layout.tsx
       (favorites)/
-        _layout.tsx
-        index.tsx
       (pokedex)/
-        _layout.tsx
-        index.tsx
       (camera)/
-        _layout.tsx
-        index.tsx
       (map)/
-        _layout.tsx
-        index.tsx
     pokemon/
       [name].tsx
   src/
     api/
-      pokeapi.ts
     components/
-      empty-state.tsx
-      error-state.tsx
-      pokemon-card.tsx
-      pokemon-detail.tsx
-      pokemon-list-row.tsx
     hooks/
-      use-favorite-pokemon.ts
-      use-map-pins.ts
-      use-pokemon-details.ts
-      use-pokemon-list.ts
     storage/
-      storage.ts
-      favorite-storage.ts
-      map-pin-storage.ts
     theme/
-      colors.ts
     types/
-      pokemon.ts
-      map.ts
 ```
 
-## Root layout
+Nie tworz pustych katalogow i plikow tylko dlatego, ze sa na tej liscie.
 
-`app/_layout.tsx` odpowiada za:
+## Nawigacja
 
-- `QueryClientProvider` dla TanStack Query.
-- Theme provider Expo Router / React Navigation.
-- Importy wymagane przez native libraries, na przyklad gesture handler.
-- Root stack bez customowego headera dla tabow.
+Preferowany kierunek to Expo Router.
 
-Wazne: jezeli uzywamy Reanimated i Gesture Handler, trzeba poprawnie ustawic entrypoint i Babel pluginy zgodnie z wersjami Expo SDK 57 oraz bibliotek.
+Minimalna zasada:
 
-## Tabs layout
-
-`app/(tabs)/_layout.tsx` definiuje cztery taby:
-
-- Favorites - rola `favorites`, ikona serca.
-- Pokedex - lista Pokemonow, ikona listy lub gridu.
-- Camera - kamera, ikona aparatu.
-- Map - mapa, ikona mapy.
-
-Preferowany wariant to `NativeTabs` z Expo Router, bo daje bardziej natywne zachowanie na iOS i Material navigation na Androidzie.
-
-Kazdy tab ma wlasny stack, zeby:
-
-- zachowac oddzielna historie nawigacji,
-- ustawic title/header per tab,
-- latwo dodac header actions, np. unfavorite.
-
-## Ekran szczegolow Pokemona
-
-`app/pokemon/[name].tsx` jest wspoldzielonym route dla szczegolow.
-
-Wejscia:
-
-- `name` z route params.
-- Opcjonalnie query param `mode`, jezeli w przyszlosci potrzebujemy odroznic kontekst listy, favorite, mapy lub sheetu.
-
-Zachowanie:
-
-- Pobiera szczegoly Pokemona po `name` albo `id`.
-- Pokazuje zdjecie, nazwe, typy, podstawowe statystyki, wzrost, wage i abilities.
-- Jesli Pokemon nie jest favorite, pokazuje akcje "Set favorite".
-- Jesli Pokemon jest favorite, pokazuje stan aktywny i mozliwosc usuniecia jego ID z favorites.
+- dodaj tylko route potrzebny dla aktualnego ekranu,
+- nie tworz wszystkich tabow, jezeli uzytkownik poprosil tylko o jeden zakres,
+- stack/detail dodawaj dopiero, gdy faktycznie jest przejscie do szczegolow.
 
 ## Data flow
 
-### Dane z API
+### API
 
-PokeAPI jest zrodlem prawdy dla danych serwerowych.
+PokeAPI, jezeli jest potrzebne, obsluguj przez natywny `fetch`.
 
-Przeplyw:
+Preferowany podzial:
 
-1. UI wywoluje hook React Query.
-2. Hook korzysta z funkcji w `src/api/pokeapi.ts`.
-3. API helper uzywa natywnego `fetch`.
-4. React Query cache'uje odpowiedz i obsluguje loading/error/retry.
-5. Komponent dostaje juz ustandaryzowany model domenowy.
+1. UI uzywa hooka albo prostej funkcji integracyjnej.
+2. Kod API mieszka w `src/api`.
+3. Mapowanie payloadu na prosty model aplikacji nie powinno byc w route file.
 
-Nie uzywamy `axios`; Expo data-fetching guidance preferuje natywny `fetch`.
+Nie dodawaj React Query, jezeli aktualny zakres jest prosty i uzytkownik nie
+prosi o cache, infinite query albo wiekszy przeplyw danych. Jezeli jednak lista
+ma miec paginacje i odswiezanie, React Query moze byc sensowny.
 
-### Dane lokalne
+### Storage
 
-Dane lokalne:
+Lokalny key-value storage, jezeli jest potrzebny, powinien uzywac
+`react-native-mmkv`, chyba ze uzytkownik wyraznie zmieni decyzje.
 
-- `favoritePokemonIds:v1`.
-- `mapPins:v1`.
+Nie dodawaj storage, jezeli aktualna funkcja go nie wymaga.
 
-Storage implementujemy wylacznie przez `react-native-mmkv`. To jest jedyne zrodlo prawdy dla lokalnych danych key-value w aplikacji. Nie uzywamy AsyncStorage, `expo-sqlite/kv-store`, `expo-sqlite/localStorage/install` ani recznych tabel SQLite dla favorite/map pins.
+Preferencja dla favorites:
 
-Przeplyw:
-
-1. `src/storage/storage.ts` tworzy jedna instancje MMKV i daje maly wrapper `getString`, `setString`, `remove`, opcjonalnie `subscribe`.
-2. `favorite-storage.ts` mapuje JSON na `FavoritePokemonIds`, czyli tablice `number[]`; zapis nie zawiera nazw, obrazkow ani payloadow PokeAPI.
-3. `map-pin-storage.ts` mapuje JSON na tablice `MapPin`.
-4. Hooki `useFavoritePokemon` i `useMapPins` wystawiaja reaktywny stan do UI.
+- zapisywac ID Pokemonow,
+- nie zapisywac calego payloadu PokeAPI,
+- miec fallback przy blednym JSON,
+- unikac duplikatow.
 
 ## Typy domenowe
 
-Minimalne typy:
+Typy dodawaj wtedy, gdy sa uzywane przez wiecej niz jeden plik albo gdy
+pomagaja utrzymac kontrakt miedzy API, storage i UI.
+
+Mozliwe typy:
 
 ```ts
 export type PokemonListItem = {
-  name: string;
-  url: string;
   id: number;
-  imageUrl: string;
+  name: string;
+  imageUrl?: string;
 };
 
 export type PokemonDetails = {
   id: number;
   name: string;
-  imageUrl: string;
-  types: string[];
-  height: number;
-  weight: number;
-  abilities: string[];
-  stats: Array<{ name: string; value: number }>;
+  imageUrl?: string;
+  types?: string[];
+  height?: number;
+  weight?: number;
 };
 
 export type FavoritePokemonIds = number[];
@@ -171,30 +124,31 @@ export type MapPin = {
   id: string;
   latitude: number;
   longitude: number;
-  pokemonName: string;
+  pokemonName?: string;
   pokemonId?: number;
-  imageUrl?: string;
   createdAt: string;
-  source: "manual" | "camera";
 };
 ```
 
-## Error handling
-
-Kazdy ekran z danymi z sieci powinien miec:
-
-- loading state,
-- error state,
-- retry action,
-- empty state tam, gdzie dane moga byc puste,
-- sensowny fallback dla braku uprawnien kamery/lokalizacji.
+To sa przyklady. Nie trzeba ich dodawac, dopoki nie sa potrzebne.
 
 ## Granice odpowiedzialnosci
 
-- `app/*`: route files, layouty, minimalne laczenie hookow z UI.
-- `src/api`: tylko komunikacja z PokeAPI i mapowanie payloadow.
-- `src/storage`: tylko zapis/odczyt lokalny.
+- `app/*`: route files, layouty, minimalne skladanie UI.
+- `src/api`: komunikacja z PokeAPI i mapowanie danych.
+- `src/storage`: zapis i odczyt lokalny.
 - `src/hooks`: integracja API/storage z React.
-- `src/components`: prezentacja, bez bezposredniego dostepu do storage lub globalnej nawigacji.
-- `src/theme`: kolory i stale UI.
+- `src/components`: prezentacja bez bezposredniego storage/API.
+- `src/theme`: male stale UI, tylko jezeli sa faktycznie potrzebne.
 - `src/types`: wspoldzielone typy.
+
+## Error handling
+
+Dla ekranow z danymi preferuj proste stany:
+
+- loading,
+- error z mozliwoscia ponowienia, jezeli ma sens,
+- empty state, jezeli dane moga byc puste.
+
+Nie buduj rozbudowanego systemu stanu, jezeli jeden prosty ekran tego nie
+wymaga.
