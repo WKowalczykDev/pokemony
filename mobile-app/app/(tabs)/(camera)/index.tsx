@@ -36,8 +36,7 @@ export default function CameraScreen() {
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.cameraContainer}>
       <Camera device={device} isActive style={styles.camera} />
-      <View style={styles.cameraOverlay}>
-      </View>
+      <View style={styles.cameraOverlay} />
     </SafeAreaView>
   );
 }
@@ -59,5 +58,5 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     alignItems: "center",
     justifyContent: "center",
-  }
+  },
 });

@@ -30,7 +30,7 @@ export function ErrorState({
 
 const styles = StyleSheet.create({
   button: {
-    alignSelf: "flex-start",
+    alignSelf: "center",
     borderColor: colors.primary,
     borderRadius: 6,
     borderWidth: 1,
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   container: {
+    alignItems: "center",
     gap: 8,
     paddingVertical: 8,
   },
@@ -50,11 +51,13 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 16,
     lineHeight: 22,
+    textAlign: "center",
   },
   title: {
     color: colors.text,
     fontSize: 20,
     fontWeight: "600",
     lineHeight: 26,
+    textAlign: "center",
   },
 });
