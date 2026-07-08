@@ -5,8 +5,11 @@ import { Camera } from "react-native-vision-camera";
 import { EmptyState, ErrorState } from "@/components";
 import { useCamera } from "@/hooks/use-camera";
 
+import { useIsFocused } from "expo-router";
+
 export default function CameraScreen() {
   const { cameraPermission, device, requestOrOpenCameraPermission } = useCamera();
+  const isFocused = useIsFocused();
 
   if (!cameraPermission.hasPermission) {
     return (
@@ -35,7 +38,7 @@ export default function CameraScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.cameraContainer}>
-      <Camera device={device} isActive style={styles.camera} />
+      <Camera device={device} isActive={isFocused} style={styles.camera} />
       <View style={styles.cameraOverlay} />
     </SafeAreaView>
   );
