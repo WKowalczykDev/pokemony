@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.wkowdev.pokemony",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Pokemony uses the camera to show a camera preview."
       }
     },
     "android": {
@@ -26,6 +27,7 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
+      "permissions": ["android.permission.CAMERA"],
       "predictiveBackGestureEnabled": false,
       "package": "com.wkowdev.pokemony"
     },
