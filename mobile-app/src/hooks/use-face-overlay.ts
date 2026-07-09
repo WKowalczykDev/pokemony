@@ -9,6 +9,7 @@ import {
 export type FaceOverlay = {
   left: number;
   top: number;
+  size: number;
 } | null;
 
 type PreviewSize = {
@@ -28,10 +29,12 @@ function getFirstFaceOverlay(faces: Face[]): FaceOverlay {
   }
 
   const { bounds } = face;
+  const size = Math.max(50, Math.min(bounds.width * 0.8, 140));
 
   return {
     left: bounds.x + bounds.width / 2,
     top: Math.max(bounds.y + bounds.height * 0.18, 0),
+    size:size,
   };
 }
 

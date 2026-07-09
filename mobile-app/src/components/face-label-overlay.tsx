@@ -31,17 +31,26 @@ export function FaceLabelOverlay({ faceOverlay }: FaceLabelOverlayProps) {
     <Image
       contentFit="contain"
       source={{ uri: spriteUrl }}
-      style={[styles.sprite, { left: faceOverlay.left, top: faceOverlay.top }]}
+      style={[
+        styles.sprite,
+        {
+          height: faceOverlay.size,
+          left: faceOverlay.left,
+          top: faceOverlay.top,
+          transform: [
+            { translateX: -faceOverlay.size / 2 },
+            { translateY: -faceOverlay.size * 0.8 },
+          ],
+          width: faceOverlay.size,
+        },
+      ]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   sprite: {
-    height: 60,
     position: "absolute",
-    transform: [{ translateX: -30, }, { translateY: -50, }],
-    width: 60,
   },
 
   label: {
