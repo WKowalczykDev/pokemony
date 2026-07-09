@@ -1,22 +1,22 @@
 import { StyleSheet, Text } from "react-native";
 
-import { getPokemonOfficialArtworkImageUrl, getPokemonSpriteImageUrl } from "@/api/pokemon-images";
-import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
-
 import type { FaceOverlay } from "@/hooks/use-face-overlay";
 
 import { CachedPokemonImage } from "./cached-pokemon-image";
 
 type FaceLabelOverlayProps = {
   faceOverlay: FaceOverlay;
+  fallbackImageUrl?: string;
+  fallbackKey?: string;
+  imageUrl?: string;
 };
 
-export function FaceLabelOverlay({ faceOverlay }: FaceLabelOverlayProps) {
-  const { favoriteIds } = useFavoritePokemon();
-  const lastFavoriteId = favoriteIds.at(-1);
-  const imageUrl = lastFavoriteId ? getPokemonOfficialArtworkImageUrl(lastFavoriteId) : undefined;
-  const fallbackImageUrl = lastFavoriteId ? getPokemonSpriteImageUrl(lastFavoriteId) : undefined;
-
+export function FaceLabelOverlay({
+  faceOverlay,
+  fallbackImageUrl,
+  fallbackKey,
+  imageUrl,
+}: FaceLabelOverlayProps) {
   if (!faceOverlay) {
     return null;
   }
@@ -32,7 +32,7 @@ export function FaceLabelOverlay({ faceOverlay }: FaceLabelOverlayProps) {
       accessibilityLabel="Favorite Pokemon image"
       contentFit="contain"
       fallbackImageUrl={fallbackImageUrl}
-      fallbackKey={lastFavoriteId ? String(lastFavoriteId) : undefined}
+      fallbackKey={fallbackKey}
       imageUrl={imageUrl}
       style={[
         styles.sprite,

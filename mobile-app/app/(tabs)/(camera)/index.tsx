@@ -3,9 +3,11 @@ import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from "react
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Camera } from "react-native-vision-camera";
 
+import { getPokemonOfficialArtworkImageUrl, getPokemonSpriteImageUrl } from "@/api/pokemon-images";
 import { EmptyState, ErrorState, FaceLabelOverlay } from "@/components";
 import { useCamera } from "@/hooks/use-camera";
 import { useFaceOverlay } from "@/hooks/use-face-overlay";
+import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
 import { colors } from "@/theme/colors";
 
 import { useIsFocused } from "expo-router";
@@ -25,6 +27,10 @@ export default function CameraScreen() {
   const insets = useSafeAreaInsets();
   const [previewSize, setPreviewSize] = useState({ width: 1, height: 1 });
   const { faceOverlay, frameOutput } = useFaceOverlay({ device, previewSize });
+  const { favoriteIds } = useFavoritePokemon();
+  const lastFavoriteId = favoriteIds.at(-1);
+  const imageUrl = lastFavoriteId ? getPokemonOfficialArtworkImageUrl(lastFavoriteId) : undefined;
+  const fallbackImageUrl = lastFavoriteId ? getPokemonSpriteImageUrl(lastFavoriteId) : undefined;
   const captureButtonDisabled = isCapturing || !isFocused;
   const controlsBottom = Math.max(insets.bottom, 16) + 24;
 
@@ -66,9 +72,15 @@ export default function CameraScreen() {
         onLayout={handleCameraLayout}
         orientationSource="device"
         outputs={[frameOutput, photoOutput]}
+        resizeMode="cover"
         style={styles.camera}
       />
-      <FaceLabelOverlay faceOverlay={faceOverlay} />
+      <FaceLabelOverlay
+        faceOverlay={faceOverlay}
+        fallbackImageUrl={fallbackImageUrl}
+        fallbackKey={lastFavoriteId ? String(lastFavoriteId) : undefined}
+        imageUrl={imageUrl}
+      />
       <View style={[styles.controls, { bottom: controlsBottom }]}>
         {captureError ? <Text style={styles.errorText}>{captureError}</Text> : null}
         {captureMessage ? <Text style={styles.messageText}>{captureMessage}</Text> : null}
@@ -76,7 +88,14 @@ export default function CameraScreen() {
           accessibilityLabel="Zrob zdjecie"
           accessibilityRole="button"
           disabled={captureButtonDisabled}
-          onPress={capturePhoto}
+          onPress={() => {
+            void capturePhoto({
+              faceOverlay,
+              fallbackImageUrl,
+              imageUrl,
+              previewSize,
+            });
+          }}
           style={({ pressed }) => [
             styles.captureButton,
             captureButtonDisabled ? styles.captureButtonDisabled : null,
