@@ -1,5 +1,5 @@
 import { Asset, usePermissions as useMediaLibraryPermissions } from "expo-media-library";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Linking } from "react-native";
 import { useCameraDevice, useCameraPermission, usePhotoOutput } from "react-native-vision-camera";
 
@@ -27,6 +27,18 @@ export function useCamera() {
 
     void Linking.openSettings();
   }, [cameraPermission]);
+
+  useEffect(() => {
+    if (!captureMessage) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setCaptureMessage(null);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [captureMessage]);
 
   const capturePhoto = useCallback(async () => {
     if (isCapturing) {
