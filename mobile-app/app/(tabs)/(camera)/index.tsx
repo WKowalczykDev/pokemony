@@ -1,15 +1,24 @@
-import { StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { StyleSheet, type LayoutChangeEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Camera } from "react-native-vision-camera";
 
-import { EmptyState, ErrorState } from "@/components";
+import { EmptyState, ErrorState, FaceLabelOverlay } from "@/components";
 import { useCamera } from "@/hooks/use-camera";
+import { useFaceOverlay } from "@/hooks/use-face-overlay";
 
 import { useIsFocused } from "expo-router";
 
 export default function CameraScreen() {
   const { cameraPermission, device, requestOrOpenCameraPermission } = useCamera();
   const isFocused = useIsFocused();
+  const [previewSize, setPreviewSize] = useState({ width: 1, height: 1 });
+  const { faceOverlay, frameOutput } = useFaceOverlay({ device, previewSize });
+
+  const handleCameraLayout = (event: LayoutChangeEvent) => {
+    const { height, width } = event.nativeEvent.layout;
+    setPreviewSize({ height, width });
+  };
 
   if (!cameraPermission.hasPermission) {
     return (
@@ -38,8 +47,15 @@ export default function CameraScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.cameraContainer}>
-      <Camera device={device} isActive={isFocused} style={styles.camera} />
-      <View style={styles.cameraOverlay} />
+      <Camera
+        device={device}
+        isActive={isFocused}
+        onLayout={handleCameraLayout}
+        orientationSource="device"
+        outputs={[frameOutput]}
+        style={styles.camera}
+      />
+      <FaceLabelOverlay faceOverlay={faceOverlay} />
     </SafeAreaView>
   );
 }
@@ -56,10 +72,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
     alignItems: "center",
-  },
-  cameraOverlay: {
-    ...StyleSheet.absoluteFill,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
