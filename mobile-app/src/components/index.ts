@@ -1,3 +1,4 @@
+export { CachedPokemonImage } from "./cached-pokemon-image";
 export { EmptyState } from "./empty-state";
 export { ErrorState } from "./error-state";
 export { FaceLabelOverlay } from "./face-label-overlay";

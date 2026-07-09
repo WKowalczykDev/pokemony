@@ -1,7 +1,8 @@
-import { Image } from "expo-image";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/theme/colors";
+
+import { CachedPokemonImage } from "./cached-pokemon-image";
 
 type PokemonCardProps = {
   name: string;
@@ -12,13 +13,12 @@ type PokemonCardProps = {
 export function PokemonCard({ name, imageUrl, subtitle }: PokemonCardProps) {
   return (
     <View style={styles.container}>
-      <Image
+      <CachedPokemonImage
         accessibilityLabel={`${name} image`}
         contentFit="contain"
-        recyclingKey={imageUrl ?? name}
-        source={imageUrl ? { uri: imageUrl } : undefined}
+        fallbackKey={name}
+        imageUrl={imageUrl}
         style={styles.image}
-        cachePolicy="memory-disk"
       />
       <View style={styles.content}>
         <Text numberOfLines={1} style={styles.name}>

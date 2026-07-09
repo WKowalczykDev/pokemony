@@ -1,10 +1,11 @@
 import { StyleSheet, Text } from "react-native";
-import { Image } from "expo-image";
 
+import { getPokemonOfficialArtworkImageUrl, getPokemonSpriteImageUrl } from "@/api/pokemon-images";
 import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
-import { useFavoritePokemonDetails } from "@/hooks/use-favorite-pokemon-details";
 
 import type { FaceOverlay } from "@/hooks/use-face-overlay";
+
+import { CachedPokemonImage } from "./cached-pokemon-image";
 
 type FaceLabelOverlayProps = {
   faceOverlay: FaceOverlay;
@@ -13,24 +14,26 @@ type FaceLabelOverlayProps = {
 export function FaceLabelOverlay({ faceOverlay }: FaceLabelOverlayProps) {
   const { favoriteIds } = useFavoritePokemon();
   const lastFavoriteId = favoriteIds.at(-1);
-
-  const { pokemon } = useFavoritePokemonDetails(lastFavoriteId ? [lastFavoriteId] : []);
-  const spriteUrl = pokemon[0]?.imageUrl;
+  const imageUrl = lastFavoriteId ? getPokemonOfficialArtworkImageUrl(lastFavoriteId) : undefined;
+  const fallbackImageUrl = lastFavoriteId ? getPokemonSpriteImageUrl(lastFavoriteId) : undefined;
 
   if (!faceOverlay) {
     return null;
   }
 
-  if (!spriteUrl) {
+  if (!imageUrl) {
     return (
       <Text style={[styles.label, { left: faceOverlay.left, top: faceOverlay.top }]}>Debil</Text>
     );
   }
 
   return (
-    <Image
+    <CachedPokemonImage
+      accessibilityLabel="Favorite Pokemon image"
       contentFit="contain"
-      source={{ uri: spriteUrl }}
+      fallbackImageUrl={fallbackImageUrl}
+      fallbackKey={lastFavoriteId ? String(lastFavoriteId) : undefined}
+      imageUrl={imageUrl}
       style={[
         styles.sprite,
         {

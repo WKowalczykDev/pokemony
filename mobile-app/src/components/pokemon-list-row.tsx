@@ -1,7 +1,8 @@
-import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/theme/colors";
+
+import { CachedPokemonImage } from "./cached-pokemon-image";
 
 type PokemonListRowProps = {
   name: string;
@@ -17,13 +18,12 @@ export function PokemonListRow({ name, imageUrl, onPress }: PokemonListRowProps)
       onPress={onPress}
       style={styles.container}
     >
-      <Image
+      <CachedPokemonImage
         accessibilityLabel={`${name} image`}
         contentFit="contain"
-        recyclingKey={imageUrl ?? name}
-        source={imageUrl ? { uri: imageUrl } : undefined}
+        fallbackKey={name}
+        imageUrl={imageUrl}
         style={styles.image}
-        cachePolicy="memory-disk"
       />
       <View style={styles.content}>
         <Text numberOfLines={1} style={styles.name}>

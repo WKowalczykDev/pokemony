@@ -7,9 +7,10 @@ import type {
   PokemonTypeName,
 } from "@/types/pokemon";
 
+import { getPokemonSpriteImageUrl } from "./pokemon-images";
+
 const BASE_URL = "https://pokeapi.co/api/v2";
 const DEFAULT_LIMIT = 20;
-const SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
 
 export class PokeApiError extends Error {
   constructor(
@@ -96,10 +97,6 @@ function getPokemonIdFromUrl(url: string): number {
   return id;
 }
 
-function getPokemonImageUrl(id: number): string {
-  return `${SPRITE_BASE_URL}/${id}.png`;
-}
-
 function getOffsetFromUrl(url: string | null): number | undefined {
   if (!url) {
     return undefined;
@@ -114,7 +111,7 @@ function mapPokemonListItem(resource: NamedApiResource): PokemonListItem {
 
   return {
     id,
-    imageUrl: getPokemonImageUrl(id),
+    imageUrl: getPokemonSpriteImageUrl(id),
     name: resource.name,
   };
 }
@@ -151,7 +148,7 @@ function mapPokemonDetails(response: PokemonDetailsResponse): PokemonDetails {
     imageUrl:
       response.sprites.other?.["official-artwork"]?.front_default ??
       response.sprites.front_default ??
-      getPokemonImageUrl(response.id),
+      getPokemonSpriteImageUrl(response.id),
     name: response.name,
     stats: response.stats.map(mapPokemonStat),
     types: response.types.map(mapPokemonType),

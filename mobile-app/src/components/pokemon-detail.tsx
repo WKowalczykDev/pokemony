@@ -1,9 +1,10 @@
-import { Image } from "expo-image";
-import { useCallback, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
+import { getPokemonSpriteImageUrl } from "@/api/pokemon-images";
 import { colors } from "@/theme/colors";
 import type { PokemonDetails } from "@/types/pokemon";
+
+import { CachedPokemonImage } from "./cached-pokemon-image";
 
 type PokemonDetailProps = {
   pokemon: PokemonDetails;
@@ -12,14 +13,8 @@ type PokemonDetailProps = {
   onSetFavorite?: () => void;
 };
 
-const SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
-
 function formatName(name: string) {
   return name.replaceAll("-", " ");
-}
-
-function getPokemonSpriteUrl(id: number) {
-  return `${SPRITE_BASE_URL}/${id}.png`;
 }
 
 export function PokemonDetail({
@@ -28,40 +23,19 @@ export function PokemonDetail({
   onRemoveFavorite,
   onSetFavorite,
 }: PokemonDetailProps) {
-  const fallbackImageUrl = useMemo(() => getPokemonSpriteUrl(pokemon.id), [pokemon.id]);
-  const initialImageUrl = pokemon.imageUrl || fallbackImageUrl;
-  const imageStateKey = `${pokemon.id}:${initialImageUrl}`;
-  const [imageState, setImageState] = useState<{
-    imageUrl: string | undefined;
-    stateKey: string;
-  }>({
-    imageUrl: initialImageUrl,
-    stateKey: imageStateKey,
-  });
-  const activeImageUrl =
-    imageState.stateKey === imageStateKey ? imageState.imageUrl : initialImageUrl;
-
-  const handleImageError = useCallback(() => {
-    setImageState({
-      imageUrl:
-        activeImageUrl && activeImageUrl !== fallbackImageUrl ? fallbackImageUrl : undefined,
-      stateKey: imageStateKey,
-    });
-  }, [activeImageUrl, fallbackImageUrl, imageStateKey]);
-
+  const fallbackImageUrl = getPokemonSpriteImageUrl(pokemon.id);
   const favoriteAction = isFavorite ? onRemoveFavorite : onSetFavorite;
   const favoriteLabel = isFavorite ? "Remove favorite" : "Set favorite";
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
-      <Image
+      <CachedPokemonImage
         accessibilityLabel={`${pokemon.name} image`}
         contentFit="contain"
-        onError={handleImageError}
-        recyclingKey={activeImageUrl ?? pokemon.name}
-        source={activeImageUrl ? { uri: activeImageUrl } : undefined}
+        fallbackImageUrl={fallbackImageUrl}
+        fallbackKey={pokemon.name}
+        imageUrl={pokemon.imageUrl}
         style={styles.image}
-        cachePolicy="memory-disk"
       />
 
       <Text style={styles.title}>{formatName(pokemon.name)}</Text>
