@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   sprite: {
     height: 60,
     position: "absolute",
-    transform: [{ translateX: -30 }],
+    transform: [{ translateX: -30, }, { translateY: -50, }],
     width: 60,
   },
 
