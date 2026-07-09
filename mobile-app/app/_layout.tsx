@@ -9,8 +9,12 @@ import { useColorScheme } from "react-native";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      staleTime: 1000 * 60 * 60 * 24,
+      gcTime: 1000 * 60 * 60,
       retry: 2,
-      staleTime: 1000 * 60 * 5,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
     },
   },
 });
