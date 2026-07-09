@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.wkowdev.pokemony",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Pokemony uses the camera to show a camera preview."
+        "NSCameraUsageDescription": "Pokemony uses the camera to show a camera preview.",
+        "NSPhotoLibraryAddUsageDescription": "Pokemony saves captured photos to your photo library."
       }
     },
     "android": {
