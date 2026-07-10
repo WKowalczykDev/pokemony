@@ -127,12 +127,14 @@ function IosMapScreen() {
           pin={selectedPin}
         />
       ) : null}
-      <MapPinListDrawer
-        isOpen={isPinListOpen}
-        onClose={handleClosePinList}
-        onRemovePin={handleRemovePin}
-        pins={pins}
-      />
+      {isPinListOpen ? (
+        <MapPinListDrawer
+          isOpen
+          onClose={handleClosePinList}
+          onRemovePin={handleRemovePin}
+          pins={pins}
+        />
+      ) : null}
     </BottomSheetProvider>
   );
 }

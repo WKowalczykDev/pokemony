@@ -42,12 +42,13 @@ function getSubtitle(pin: MapPin) {
 export function MapPinSheet({ isOpen, onClose, pin }: MapPinSheetProps) {
   const { height } = useWindowDimensions();
   const hasPhoto = Boolean(pin.photoAssetId);
+  const photoHeight = Math.min(Math.round(height * 0.45), 340);
   const [sheetIndex, setSheetIndex] = useState(isOpen ? defaultSheetIndex : closedSheetIndex);
   const detents = useMemo(
     () => [
       closedSheetIndex,
-      Math.round(height * (hasPhoto ? 0.55 : 0.38)),
-      Math.round(height * 0.7),
+      Math.round(height * (hasPhoto ? 0.78 : 0.38)),
+      Math.round(height * (hasPhoto ? 0.9 : 0.7)),
     ],
     [hasPhoto, height],
   );
@@ -80,9 +81,9 @@ export function MapPinSheet({ isOpen, onClose, pin }: MapPinSheetProps) {
         {pin.photoAssetId ? (
           <Image
             accessibilityLabel="Captured photo"
-            contentFit="cover"
+            contentFit="contain"
             source={{ uri: pin.photoAssetId }}
-            style={styles.photo}
+            style={[styles.photo, { height: photoHeight }]}
           />
         ) : null}
         <PokemonCard
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   container: {
     gap: 12,
     minHeight: 160,
-    padding: 16,
+    padding: 12,
   },
   details: {
     gap: 6,
@@ -116,8 +117,7 @@ const styles = StyleSheet.create({
   },
   photo: {
     backgroundColor: colors.surface,
-    borderRadius: 6,
-    height: 180,
+    borderRadius: 4,
     width: "100%",
   },
   surface: {
