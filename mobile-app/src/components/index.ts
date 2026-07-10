@@ -3,6 +3,7 @@ export { EmptyState } from "./empty-state";
 export { ErrorState } from "./error-state";
 export { FaceLabelOverlay } from "./face-label-overlay";
 export { LoadingState } from "./loading-state";
+export { MapPinListDrawer } from "./map-pin-list-drawer";
 export { MapPinSheet } from "./map-pin-sheet";
 export { PokemonCard } from "./pokemon-card";
 export { PokemonDetail } from "./pokemon-detail";

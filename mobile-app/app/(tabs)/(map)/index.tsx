@@ -1,10 +1,11 @@
 import { BottomSheetProvider } from "@swmansion/react-native-bottom-sheet";
+import { Icon } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, Pressable, StyleSheet } from "react-native";
 import MapView, { Marker, type LongPressEvent } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { EmptyState, MapPinSheet } from "@/components";
+import { EmptyState, MapPinListDrawer, MapPinSheet } from "@/components";
 import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
 import { useFavoritePokemonDetails } from "@/hooks/use-favorite-pokemon-details";
 import { useIosMapLocation } from "@/hooks/use-ios-map-location";
@@ -27,6 +28,7 @@ function getMarkerDescription(pin: MapPin) {
 function IosMapScreen() {
   const mapRef = useRef<MapView>(null);
   const [selectedPin, setSelectedPin] = useState<MapPin>();
+  const [isPinListOpen, setIsPinListOpen] = useState(false);
   const { favoriteIds } = useFavoritePokemon();
   const currentFavoriteId = favoriteIds.at(-1);
   const currentFavoriteIds = useMemo(
@@ -35,7 +37,7 @@ function IosMapScreen() {
   );
   const { pokemon: currentFavoritePokemon } = useFavoritePokemonDetails(currentFavoriteIds);
   const currentFavorite = currentFavoritePokemon[0];
-  const { pins, addPin } = useMapPins();
+  const { pins, addPin, removePin } = useMapPins();
   const { centerOnUser, hasLocationPermission, region } = useIosMapLocation();
 
   useEffect(() => {
@@ -60,6 +62,23 @@ function IosMapScreen() {
       });
     },
     [addPin, currentFavorite, currentFavoriteId],
+  );
+
+  const handleOpenPinList = useCallback(() => {
+    setSelectedPin(undefined);
+    setIsPinListOpen(true);
+  }, []);
+
+  const handleClosePinList = useCallback(() => {
+    setIsPinListOpen(false);
+  }, []);
+
+  const handleRemovePin = useCallback(
+    (pinId: string) => {
+      removePin(pinId);
+      setSelectedPin((currentPin) => (currentPin?.id === pinId ? undefined : currentPin));
+    },
+    [removePin],
   );
 
   return (
@@ -90,6 +109,14 @@ function IosMapScreen() {
             />
           ))}
         </MapView>
+        <Pressable
+          accessibilityLabel="Open map pins"
+          accessibilityRole="button"
+          onPress={handleOpenPinList}
+          style={styles.pinListButton}
+        >
+          <Icon md="menu" sf="line.3.horizontal" />
+        </Pressable>
       </SafeAreaView>
       {selectedPin ? (
         <MapPinSheet
@@ -100,6 +127,12 @@ function IosMapScreen() {
           pin={selectedPin}
         />
       ) : null}
+      <MapPinListDrawer
+        isOpen={isPinListOpen}
+        onClose={handleClosePinList}
+        onRemovePin={handleRemovePin}
+        pins={pins}
+      />
     </BottomSheetProvider>
   );
 }
@@ -123,6 +156,19 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  pinListButton: {
+    alignItems: "center",
+    backgroundColor: colors.background,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 44,
+    justifyContent: "center",
+    left: 16,
+    position: "absolute",
+    top: 16,
+    width: 44,
   },
   stateContainer: {
     alignItems: "center",
