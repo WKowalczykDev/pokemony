@@ -10,6 +10,7 @@ export type AddMapPinInput = {
   pokemonName?: string;
   pokemonId?: number;
   imageUrl?: string;
+  photoAssetId?: string;
   source?: MapPin["source"];
 };
 
@@ -73,6 +74,7 @@ function normalizeStoredMapPin(value: unknown): MapPin | undefined {
     imageUrl: normalizeOptionalString(candidate.imageUrl),
     latitude: candidate.latitude,
     longitude: candidate.longitude,
+    photoAssetId: normalizeOptionalString(candidate.photoAssetId),
     pokemonId: normalizeOptionalNumber(candidate.pokemonId),
     pokemonName,
     source,
@@ -114,6 +116,7 @@ function createMapPin(input: AddMapPinInput): MapPin {
     imageUrl: normalizeOptionalString(input.imageUrl),
     latitude: input.latitude,
     longitude: input.longitude,
+    photoAssetId: normalizeOptionalString(input.photoAssetId),
     pokemonId: normalizeOptionalNumber(input.pokemonId),
     pokemonName,
     source: input.source ?? "manual",

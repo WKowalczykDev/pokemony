@@ -14,7 +14,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Pokemony uses the camera to show a camera preview.",
-        "NSPhotoLibraryAddUsageDescription": "Pokemony saves captured photos to your photo library."
+        "NSPhotoLibraryAddUsageDescription": "Pokemony saves captured photos to your photo library.",
+        "NSPhotoLibraryUsageDescription": "Pokemony shows captured photos on map pins."
       }
     },
     "android": {

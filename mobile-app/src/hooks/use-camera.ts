@@ -1,11 +1,15 @@
 import { Image as ExpoImage } from "expo-image";
 import { Asset, usePermissions as useMediaLibraryPermissions } from "expo-media-library";
-import { useCallback, useState, useEffect } from "react";
+import * as Location from "expo-location";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Linking } from "react-native";
 import { Images, loadImage, type Image as NitroImage } from "react-native-nitro-image";
 import { useCameraDevice, useCameraPermission, usePhotoOutput } from "react-native-vision-camera";
 
-import { getPokemonImageCacheKey } from "@/api/pokemon-images";
+import { getPokemonImageCacheKey, getPokemonOfficialArtworkImageUrl } from "@/api/pokemon-images";
+import { useFavoritePokemon } from "@/hooks/use-favorite-pokemon";
+import { useFavoritePokemonDetails } from "@/hooks/use-favorite-pokemon-details";
+import { addMapPin } from "@/storage/map-pin-storage";
 
 import type { FaceOverlay } from "./use-face-overlay";
 
@@ -84,9 +88,7 @@ async function renderPokemon(
     scale;
   const rawSize = faceOverlay.size / scale;
   const imageX =
-    options.previewMirrored !== photoMirrored
-      ? photoImage.width - rawX - rawSize
-      : rawX;
+    options.previewMirrored !== photoMirrored ? photoImage.width - rawX - rawSize : rawX;
   const x = clamp(imageX, 0, photoImage.width);
   const y = clamp(rawY, 0, photoImage.height);
   const width = clamp(imageX + rawSize, 0, photoImage.width) - x;
@@ -112,14 +114,42 @@ async function renderPokemon(
   }
 }
 
+function toFileUri(filePath: string) {
+  return filePath.startsWith("file://") ? filePath : `file://${filePath}`;
+}
+
+async function getCurrentPhotoLocation() {
+  try {
+    const permission = await Location.requestForegroundPermissionsAsync();
+
+    if (permission.status !== "granted") {
+      return undefined;
+    }
+
+    return await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 export function useCamera() {
   const cameraPermission = useCameraPermission();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = useMediaLibraryPermissions({
     granularPermissions: ["photo"],
-    writeOnly: true,
+    writeOnly: false,
   });
   const device = useCameraDevice("front");
   const photoOutput = usePhotoOutput();
+  const { favoriteIds } = useFavoritePokemon();
+  const currentFavoriteId = favoriteIds.at(-1);
+  const currentFavoriteIds = useMemo(
+    () => (currentFavoriteId ? [currentFavoriteId] : []),
+    [currentFavoriteId],
+  );
+  const { pokemon: currentFavoritePokemon } = useFavoritePokemonDetails(currentFavoriteIds);
+  const currentFavorite = currentFavoritePokemon[0];
   const [isCapturing, setIsCapturing] = useState(false);
   const [captureMessage, setCaptureMessage] = useState<string | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
@@ -183,7 +213,34 @@ export function useCamera() {
 
           const finalPhotoPath = await finalImage.saveToTemporaryFileAsync("jpg", 90);
 
-          await Asset.create(`file://${finalPhotoPath}`);
+          const asset = await Asset.create(toFileUri(finalPhotoPath));
+
+          if (!currentFavoriteId) {
+            setCaptureMessage("Zdjecie zapisane w galerii. Brak favorite, pin nie zostal dodany.");
+            return;
+          }
+
+          const location = await getCurrentPhotoLocation();
+
+          if (!location) {
+            setCaptureMessage(
+              "Zdjecie zapisane w galerii. Brak lokalizacji, pin nie zostal dodany.",
+            );
+            return;
+          }
+
+          addMapPin({
+            imageUrl:
+              currentFavorite?.imageUrl ?? getPokemonOfficialArtworkImageUrl(currentFavoriteId),
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            photoAssetId: asset.id,
+            pokemonId: currentFavorite?.id ?? currentFavoriteId,
+            pokemonName: currentFavorite?.name ?? `Pokemon #${currentFavoriteId}`,
+            source: "camera",
+          });
+
+          setCaptureMessage("Zdjecie zapisane w galerii i dodane do mapy.");
         } finally {
           photo.dispose();
 
@@ -193,15 +250,20 @@ export function useCamera() {
 
           photoImage?.dispose();
         }
-
-        setCaptureMessage("Zdjecie zapisane w galerii.");
       } catch {
         setCaptureError("Nie udalo sie zrobic albo zapisac zdjecia.");
       } finally {
         setIsCapturing(false);
       }
     },
-    [isCapturing, mediaLibraryPermission, photoOutput, requestMediaLibraryPermission],
+    [
+      currentFavorite,
+      currentFavoriteId,
+      isCapturing,
+      mediaLibraryPermission,
+      photoOutput,
+      requestMediaLibraryPermission,
+    ],
   );
 
   return {

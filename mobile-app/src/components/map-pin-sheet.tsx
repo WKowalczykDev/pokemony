@@ -1,4 +1,5 @@
 import { ModalBottomSheet } from "@swmansion/react-native-bottom-sheet";
+import { Image } from "expo-image";
 import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
@@ -40,10 +41,15 @@ function getSubtitle(pin: MapPin) {
 
 export function MapPinSheet({ isOpen, onClose, pin }: MapPinSheetProps) {
   const { height } = useWindowDimensions();
+  const hasPhoto = Boolean(pin.photoAssetId);
   const [sheetIndex, setSheetIndex] = useState(isOpen ? defaultSheetIndex : closedSheetIndex);
   const detents = useMemo(
-    () => [closedSheetIndex, Math.round(height * 0.38), Math.round(height * 0.7)],
-    [height],
+    () => [
+      closedSheetIndex,
+      Math.round(height * (hasPhoto ? 0.55 : 0.38)),
+      Math.round(height * 0.7),
+    ],
+    [hasPhoto, height],
   );
 
   const handleIndexChange = useCallback((nextIndex: number) => {
@@ -71,6 +77,14 @@ export function MapPinSheet({ isOpen, onClose, pin }: MapPinSheetProps) {
       surface={<View style={styles.surface} />}
     >
       <View style={styles.container}>
+        {pin.photoAssetId ? (
+          <Image
+            accessibilityLabel="Captured photo"
+            contentFit="cover"
+            source={{ uri: pin.photoAssetId }}
+            style={styles.photo}
+          />
+        ) : null}
         <PokemonCard
           imageUrl={pin.imageUrl}
           name={formatName(pin.pokemonName)}
@@ -99,6 +113,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
     lineHeight: 20,
+  },
+  photo: {
+    backgroundColor: colors.surface,
+    borderRadius: 6,
+    height: 180,
+    width: "100%",
   },
   surface: {
     ...StyleSheet.absoluteFill,

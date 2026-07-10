@@ -5,6 +5,7 @@ export type MapPin = {
   pokemonName: string;
   pokemonId?: number;
   imageUrl?: string;
+  photoAssetId?: string;
   createdAt: string;
   source: "manual" | "camera";
 };
