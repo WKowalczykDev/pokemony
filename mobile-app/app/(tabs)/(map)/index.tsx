@@ -1,5 +1,5 @@
 import { BottomSheetProvider } from "@swmansion/react-native-bottom-sheet";
-import { Icon } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, Pressable, StyleSheet } from "react-native";
 import MapView, { Marker, type LongPressEvent } from "react-native-maps";
@@ -115,7 +115,7 @@ function IosMapScreen() {
           onPress={handleOpenPinList}
           style={styles.pinListButton}
         >
-          <Icon md="menu" sf="line.3.horizontal" />
+          <SymbolView name="line.3.horizontal" size={22} tintColor={colors.text} />
         </Pressable>
       </SafeAreaView>
       {selectedPin ? (
