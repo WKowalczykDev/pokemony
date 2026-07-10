@@ -93,6 +93,7 @@ export default function CameraScreen() {
               faceOverlay,
               fallbackImageUrl,
               imageUrl,
+              previewMirrored: device.position === "front",
               previewSize,
             });
           }}

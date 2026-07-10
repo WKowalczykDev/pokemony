@@ -13,6 +13,7 @@ export type CapturePhotoOptions = {
   faceOverlay?: FaceOverlay;
   fallbackImageUrl?: string;
   imageUrl?: string;
+  previewMirrored: boolean;
   previewSize: { width: number; height: number };
 };
 
@@ -55,7 +56,11 @@ async function loadPokemonImage(urls: (string | undefined)[]) {
   return null;
 }
 
-async function renderPokemon(photoImage: NitroImage, options?: CapturePhotoOptions) {
+async function renderPokemon(
+  photoImage: NitroImage,
+  photoMirrored: boolean,
+  options?: CapturePhotoOptions,
+) {
   const faceOverlay = options?.faceOverlay;
   const urls = [options?.imageUrl, options?.fallbackImageUrl];
 
@@ -78,9 +83,13 @@ async function renderPokemon(photoImage: NitroImage, options?: CapturePhotoOptio
       (options.previewSize.height - photoImage.height * scale) / 2) /
     scale;
   const rawSize = faceOverlay.size / scale;
-  const x = clamp(rawX, 0, photoImage.width);
+  const imageX =
+    options.previewMirrored !== photoMirrored
+      ? photoImage.width - rawX - rawSize
+      : rawX;
+  const x = clamp(imageX, 0, photoImage.width);
   const y = clamp(rawY, 0, photoImage.height);
-  const width = clamp(rawX + rawSize, 0, photoImage.width) - x;
+  const width = clamp(imageX + rawSize, 0, photoImage.width) - x;
   const height = clamp(rawY + rawSize, 0, photoImage.height) - y;
   const pokemonImage = width >= 1 && height >= 1 ? await loadPokemonImage(urls) : null;
 
@@ -170,7 +179,7 @@ export function useCamera() {
 
         try {
           photoImage = await photo.toImageAsync();
-          finalImage = (await renderPokemon(photoImage, options)) ?? photoImage;
+          finalImage = (await renderPokemon(photoImage, photo.isMirrored, options)) ?? photoImage;
 
           const finalPhotoPath = await finalImage.saveToTemporaryFileAsync("jpg", 90);
 
