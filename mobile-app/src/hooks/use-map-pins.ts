@@ -4,6 +4,7 @@ import {
   addMapPin,
   type AddMapPinInput,
   readMapPins,
+  removeMapPin,
   subscribeToMapPins,
 } from "@/storage/map-pin-storage";
 
@@ -20,8 +21,13 @@ export function useMapPins() {
     setPins(addMapPin(input));
   }, []);
 
+  const removePin = useCallback((id: string) => {
+    setPins(removeMapPin(id));
+  }, []);
+
   return {
     addPin,
     pins,
+    removePin,
   };
 }

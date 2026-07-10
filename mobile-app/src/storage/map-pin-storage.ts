@@ -151,6 +151,16 @@ export function addMapPin(input: AddMapPinInput): MapPin[] {
   return writeMapPins([...readMapPins(), createMapPin(input)]);
 }
 
+export function removeMapPin(id: string): MapPin[] {
+  const normalizedId = normalizeOptionalString(id);
+
+  if (!normalizedId) {
+    return readMapPins();
+  }
+
+  return writeMapPins(readMapPins().filter((pin) => pin.id !== normalizedId));
+}
+
 export function subscribeToMapPins(onChange: () => void) {
   return subscribe(MAP_PINS_KEY, onChange);
 }
