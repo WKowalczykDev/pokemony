@@ -1,9 +1,12 @@
 import { Icon } from "expo-router";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { colors } from "@/theme/colors"
 
 export default function TabsLayout() {
   return (
-    <NativeTabs>
+    <NativeTabs
+      disableTransparentOnScrollEdge
+    >
       <NativeTabs.Trigger name="(favorites)">
         <Icon md="favorite" sf="heart" />
         <NativeTabs.Trigger.Label>Favorites</NativeTabs.Trigger.Label>
